@@ -2,8 +2,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Soul Generator v3.2 — Cipher Tech Reactor (Winds of Ascension)</title>
-  <meta name="description" content="Tap the core to awaken souls. Cinematic particles, wind-chime ambience, sparkling taps, gust-of-wind ascensions, stage-evolving orb, and Cipher Tech boot sequence." />
+  <title>Soul Generator v3.3 — Cipher Tech Reactor (Soul Ascent)</title>
+  <meta name="description" content="Tap the core to awaken souls. Rainbow XP bar, cinematic particles, wind-chime ambience, sparkling taps, gust-of-wind ascensions, stage-evolving orb, and Cipher Tech boot sequence." />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -37,8 +37,27 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
 .btn { background: linear-gradient(90deg,var(--gold),var(--purple)); border: none; padding: 10px 16px; border-radius: 12px; color: #fff; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.4); font-size: 14px; font-weight: 700; }
 .btn.outline { background: transparent; border:1px solid var(--gold); color: var(--gold); box-shadow:none; }
 
+/* XP Bar (rainbow, orb-synced) */
+.xp-wrap { width: min(92vw, 980px); margin: 6px auto 0; padding: 0 8px; }
+.xp { position: relative; height: 30px; border-radius: 999px; overflow: hidden; border:1px solid rgba(255,255,255,0.15);
+  background: rgba(20, 12, 36, 0.55); box-shadow: 0 0 20px rgba(124,58,237,0.25) inset, 0 0 16px rgba(212,175,55,0.18);
+  animation: pulseSync 2.4s ease-in-out infinite; }
+/* flowing rainbow underlay */
+.xp::before { content:""; position:absolute; inset:0; background: linear-gradient(90deg,
+  #ff0080, #ff8c00, #ffe600, #21d07a, #00b3ff, #7c3aed, #ff0080);
+  background-size: 400% 100%; filter: blur(6px); opacity: 0.65; animation: rainbow 10s linear infinite; }
+/* fill layer */
+.xp-fill { position:absolute; top:0; left:0; height:100%; width:0%; border-radius: 999px; background: linear-gradient(90deg, rgba(212,175,55,0.9), rgba(124,58,237,0.95)); box-shadow: 0 0 18px rgba(212,175,55,0.45), 0 0 24px rgba(124,58,237,0.35); transition: width 420ms ease; }
+/* inner spark noise */
+.xp-sparks { position:absolute; inset:0; pointer-events:none; background-image: radial-gradient(circle at 10% 50%, rgba(255,255,255,0.25) 0 1px, transparent 1px), radial-gradient(circle at 30% 40%, rgba(255,255,255,0.2) 0 1px, transparent 1px), radial-gradient(circle at 60% 60%, rgba(255,255,255,0.15) 0 1px, transparent 1px), radial-gradient(circle at 80% 35%, rgba(255,255,255,0.2) 0 1px, transparent 1px); background-size: 140px 40px, 200px 40px, 180px 40px, 220px 40px; background-repeat: repeat; opacity: 0.35; animation: sparks 6s linear infinite; }
+.xp-text { position:absolute; inset:0; display:grid; place-items:center; font-size: 12px; letter-spacing: 0.5px; text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+
+@keyframes rainbow { 0%{ background-position: 0% 50%; } 100%{ background-position: 400% 50%; } }
+@keyframes sparks { 0%{ background-position: 0 0, 0 0, 0 0, 0 0; } 100%{ background-position: 140px 0, 200px 0, 180px 0, 220px 0; } }
+@keyframes pulseSync { 0%,100%{ box-shadow: 0 0 20px rgba(124,58,237,0.25) inset, 0 0 16px rgba(212,175,55,0.18);} 50%{ box-shadow: 0 0 30px rgba(124,58,237,0.35) inset, 0 0 28px rgba(212,175,55,0.28);} }
+
 /* Arena */
-.arena { position: relative; width:100%; height: calc(100vh - 220px); display:grid; place-items:center; }
+.arena { position: relative; width:100%; height: calc(100vh - 254px); display:grid; place-items:center; }
 
 /* Background pulse wave */
 .pulse { position: absolute; inset: 0; pointer-events:none; opacity: 0; transform: scale(0.9);
@@ -109,7 +128,13 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
     <div class="pill">Souls: <span id="souls">0</span></div>
     <div class="pill">Stage: <span id="stageName">Ember</span></div>
     <button id="soundBtn" class="btn outline">🔇 Sound Off</button>
-  </header>  <main class="arena">
+  </header>  <!-- XP BAR -->  <div class="xp-wrap">
+    <div class="xp" id="xpBar">
+      <div class="xp-fill" id="xpFill"></div>
+      <div class="xp-sparks"></div>
+      <div class="xp-text" id="xpText">XP: 0 / 100</div>
+    </div>
+  </div>  <main class="arena">
     <div class="pulse" id="pulse"></div>
     <div class="orb" id="orb" role="button" aria-label="Generate soul energy"></div>
   </main>  <div class="controls">
@@ -136,7 +161,7 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
       <div class="boot-line" id="o3">Offline</div>
     </div>
   </div>  <!-- Watermarks -->  <div class="wm-right">Powered by Cipher Tech Systems</div>
-  <div class="wm-left">v3.2 — Cipher Tech Reactor</div>  <div class="ascend" id="ascendMsg"></div>  <script>
+  <div class="wm-left">v3.3 — Cipher Tech Reactor</div>  <div class="ascend" id="ascendMsg"></div>  <script>
   ;(() => {
     // ===== Elements =====
     const orb = document.getElementById('orb');
@@ -153,6 +178,10 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
     const offText = document.getElementById('offText');
     const pulse = document.getElementById('pulse');
     const ascendMsg = document.getElementById('ascendMsg');
+    // XP bar
+    const xpBar = document.getElementById('xpBar');
+    const xpFill = document.getElementById('xpFill');
+    const xpText = document.getElementById('xpText');
 
     // ===== Stages & palettes =====
     const STAGES = [
@@ -197,6 +226,34 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
     let lastStageIndex = currentStageIndex(state.souls);
     applyStageColors(lastStageIndex);
 
+    function nextThreshold(idx){
+      if(idx >= STAGES.length-1) return null; // max stage
+      return STAGES[idx+1].threshold;
+    }
+
+    function updateXPBar(){
+      const idx = currentStageIndex(state.souls);
+      const next = nextThreshold(idx);
+      if(next === null){
+        xpFill.style.width = '100%';
+        xpText.textContent = 'XP: MAX';
+        return;
+      }
+      const currBase = STAGES[idx].threshold;
+      const progress = Math.max(0, Math.min(1, (state.souls - currBase) / (next - currBase)));
+      xpFill.style.width = (progress * 100).toFixed(1) + '%';
+      xpText.textContent = `XP: ${format(state.souls)} / ${format(next)}`;
+    }
+
+    function flashXP(){
+      // brief white flash overlay using box-shadow bump on the fill layer
+      xpFill.animate([
+        { boxShadow: '0 0 18px rgba(212,175,55,0.45), 0 0 24px rgba(124,58,237,0.35)' },
+        { boxShadow: '0 0 34px rgba(255,255,255,0.95), 0 0 42px rgba(255,255,255,0.65)' },
+        { boxShadow: '0 0 18px rgba(212,175,55,0.45), 0 0 24px rgba(124,58,237,0.35)' }
+      ], { duration: 700, easing: 'ease-out' });
+    }
+
     function showAscend(name){
       ascendMsg.textContent = `You have ascended to ${name}.`;
       ascendMsg.classList.add('show');
@@ -208,11 +265,14 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
       const idx = currentStageIndex(state.souls);
       const name = STAGES[idx].name;
       stageNameEl.textContent = name;
+      updateXPBar();
       if(idx > lastStageIndex){ // stage up
         applyStageColors(idx);
         stageFlare();
         showAscend(name);
         playGust();
+        flashXP();
+        playSparkle(1); // tiny sparkle accent for the flash
       }
       lastStageIndex = idx;
       save();
@@ -295,10 +355,9 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
     let chimeTimer = null;
     function startChimeAmbience(){
       if(chimeTimer) clearInterval(chimeTimer);
-      // schedule a small stack of chimes every few seconds
       chimeTimer = setInterval(()=>{
         if(state.sound!=='on' || !audioCtx) return;
-        const base = 440 * Math.pow(2, (Math.random()*12-6)/12); // random base around A4
+        const base = 440 * Math.pow(2, (Math.random()*12-6)/12);
         for(let i=0;i<3;i++) setTimeout(()=>playChime(base * (i===0?1: (i===1?1.25:1.5))), i*220);
       }, 3200);
     }
@@ -312,8 +371,8 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
     }
 
     // Tap sparkle (short tinkle)
-    function playSparkle(){ if(state.sound!=='on' || !audioCtx) return;
-      const o = audioCtx.createOscillator(); o.type='triangle'; o.frequency.value = 1600 + Math.random()*800;
+    function playSparkle(mult=1){ if(state.sound!=='on' || !audioCtx) return;
+      const o = audioCtx.createOscillator(); o.type='triangle'; o.frequency.value = (1600 + Math.random()*800) * mult;
       const g = audioCtx.createGain(); g.gain.value = 0.0001; const hp = audioCtx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value = 800;
       o.connect(hp); hp.connect(g); g.connect(reverb); g.connect(masterGain);
       const now = audioCtx.currentTime; g.gain.exponentialRampToValueAtTime(0.22, now+0.01); g.gain.exponentialRampToValueAtTime(0.0001, now+0.25);

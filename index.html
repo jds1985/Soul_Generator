@@ -4,411 +4,115 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Soul Generator • DigiSoul</title>
   <meta name="description" content="Tap to awaken the light. Generate souls, evolve your orb, and ascend." />
-  <meta property="og:title" content="Soul Generator • DigiSoul" />
-  <meta property="og:description" content="Tap to awaken the light. Generate souls, evolve your orb, and ascend." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://dummyimage.com/1200x630/1c0b2b/d4af37&text=Soul+Generator" />
   <style>
     :root {
-      --bg-0: #0b0613; /* near-black purple */
+      --bg-0: #0b0613;
       --bg-1: #120a21;
-      --purple: #7c3aed;   /* primary purple */
-      --purple-soft: #a855f7;
-      --gold: #d4af37;     /* primary gold */
-      --gold-soft: #f5d46b;
+      --purple: #7c3aed;
+      --gold: #d4af37;
       --white: #ffffff;
-      --text-dim: #bda9ff;
-      --glow: 0 0 40px rgba(124, 58, 237, 0.5), 0 0 80px rgba(212, 175, 55, 0.25);
-    }* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; }
-
-body {
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-  color: #f8f7ff;
-  background: radial-gradient(1200px 1200px at 50% 40%, rgba(124,58,237,0.08), transparent 60%),
-              radial-gradient(900px 900px at 20% 80%, rgba(212,175,55,0.06), transparent 55%),
-              linear-gradient(180deg, var(--bg-1), var(--bg-0));
-  overflow: hidden;
+    }
+    body {
+      margin: 0; font-family: system-ui, sans-serif; color: #fff;
+      background: linear-gradient(180deg,var(--bg-1),var(--bg-0));
+      text-align:center; overflow:hidden;
+    }
+    h1 {margin-top: 30px; color: var(--gold);}
+    #souls {font-size: 26px; font-weight:700; margin-top:20px;}
+    .orb {
+      margin: 80px auto 40px; width:200px; height:200px; border-radius:50%; cursor:pointer;
+      background: radial-gradient(circle at 50% 45%, #fff, var(--gold) 30%, rgba(124,58,237,0.8) 60%, rgba(12,5,22,1) 85%);
+      box-shadow: 0 0 60px rgba(124,58,237,0.6), 0 0 120px rgba(212,175,55,0.3);
+      animation: throb 2s ease-in-out infinite;
+    }
+    @keyframes throb {0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+    .open-shop-btn {
+      background: linear-gradient(90deg,var(--gold),var(--purple));
+      border: none; padding: 12px 20px; border-radius: 12px; color: #fff; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      font-size: 16px; font-weight: 600;
+    }/* Modal */
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
 }
+.modal-bg.active {opacity:1; pointer-events: all;}
 
-.wrap {
-  position: relative;
-  height: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  align-items: center;
-  justify-items: center;
-  gap: 16px;
-  padding: 18px 16px 24px;
+.shop-modal {
+  width: 100%; max-width: 420px; background: rgba(18,10,33,0.95);
+  border-radius: 20px 20px 0 0; border-top: 2px solid var(--gold);
+  box-shadow: 0 -6px 40px rgba(124,58,237,0.4);
+  transform: translateY(100%);
+  transition: transform 0.35s ease;
+  padding: 20px;
 }
+.modal-bg.active .shop-modal {transform: translateY(0);}
 
-header {
-  width: min(1024px, 96vw);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.brand {
-  display: flex; align-items: center; gap: 12px;
-  letter-spacing: 0.2px;
-}
-.brand .dot {
-  width: 12px; height: 12px; border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, var(--gold-soft), var(--gold));
-  box-shadow: 0 0 12px rgba(245,212,107,0.75);
-}
-.brand h1 { font-size: clamp(18px, 2.2vw, 22px); margin: 0; font-weight: 700; }
-.brand h1 span { background: linear-gradient(90deg, var(--gold), var(--purple)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
-.stats {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-  font-variant-numeric: tabular-nums; font-weight: 600;
-}
-
-.badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 8px 12px; border-radius: 999px;
-  background: rgba(124,58,237,0.18);
-  border: 1px solid rgba(168,85,247,0.25);
-  box-shadow: inset 0 0 30px rgba(124,58,237,0.12);
-  text-shadow: 0 0 10px rgba(124,58,237,0.5);
-}
-
-.badge.gold { background: rgba(212,175,55,0.15); border-color: rgba(212,175,55,0.35); text-shadow: 0 0 10px rgba(212,175,55,0.6); }
-
-.stage-name { color: var(--gold-soft); font-weight: 700; }
-
-/* Arena */
-.arena {
-  position: relative;
-  width: min(720px, 94vw);
-  height: min(720px, 94vw);
-  display: grid; place-items: center;
-  filter: drop-shadow(0 30px 50px rgba(0,0,0,0.55));
-  user-select: none;
-}
-
-.halo {
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(168,85,247,0.25), transparent 60%),
-              radial-gradient(40% 40% at 50% 50%, rgba(212,175,55,0.15), transparent 75%);
-  filter: blur(20px);
-  opacity: 0.9;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-
-.orb {
-  --orb-size: min(380px, 62vw);
-  width: var(--orb-size); height: var(--orb-size);
-  border-radius: 50%;
-  position: relative; cursor: pointer;
-  background: radial-gradient(circle at 50% 45%, #fff, var(--gold-soft) 30%, rgba(124,58,237,0.8) 60%, rgba(12,5,22,1) 85%);
-  box-shadow:
-    0 0 60px rgba(124,58,237,0.45),
-    0 0 120px rgba(212,175,55,0.35),
-    inset 0 0 80px rgba(255,255,255,0.6),
-    inset 0 0 160px rgba(212,175,55,0.3);
-  animation: throb 2.2s ease-in-out infinite;
-  transition: transform 90ms ease, box-shadow 0.3s ease;
-  isolation: isolate;
-}
-
-.orb::after {
-  content: "";
-  position: absolute; inset: 8%; border-radius: 50%;
-  background: radial-gradient(circle at 40% 30%, rgba(255,255,255,0.95), rgba(245,212,107,0.4) 40%, transparent 70%);
-  filter: blur(2px);
-  mix-blend-mode: screen;
-  pointer-events: none;
-}
-
-@keyframes throb {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
-.click-hint { position: absolute; bottom: 10%; font-size: 14px; opacity: 0.7; }
-
-/* Floating numbers */
-.float-num {
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  font-weight: 800; pointer-events: none; white-space: nowrap;
-  text-shadow: 0 0 12px rgba(245,212,107,0.7), 0 0 24px rgba(124,58,237,0.6);
-  animation: floatUp 900ms ease-out forwards;
-}
-@keyframes floatUp {
-  0% { opacity: 0; transform: translate(-50%, -30%) scale(0.8); }
-  15% { opacity: 1; }
-  100% { opacity: 0; transform: translate(-50%, -120%) scale(1.2); }
-}
-
-/* Particles */
-.particle {
-  position: absolute; width: 6px; height: 6px; border-radius: 50%;
-  background: radial-gradient(circle, var(--gold-soft), var(--gold));
-  filter: drop-shadow(0 0 8px rgba(245,212,107,0.9));
-  animation: burst 700ms ease-out forwards;
-  pointer-events: none;
-  mix-blend-mode: screen;
-}
-@keyframes burst {
-  0% { opacity: 0; transform: translate(0,0) scale(0.7); }
-  12% { opacity: 1; }
-  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); }
-}
-
-/* Controls */
-.controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-button {
-  background: linear-gradient(180deg, rgba(212,175,55,0.18), rgba(124,58,237,0.22));
-  color: #fff; border: 1px solid rgba(212,175,55,0.4);
-  padding: 10px 14px; border-radius: 12px; cursor: pointer;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35), inset 0 0 18px rgba(124,58,237,0.2);
-  transition: transform 120ms ease, box-shadow 200ms ease, background 200ms ease;
-  font-weight: 700;
-}
-button:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(0,0,0,0.45), inset 0 0 20px rgba(212,175,55,0.25); }
-
-.progress {
-  width: min(720px, 94vw);
-  background: rgba(124,58,237,0.18);
-  border: 1px solid rgba(168,85,247,0.3);
-  border-radius: 999px; height: 12px; overflow: hidden;
-  box-shadow: inset 0 0 20px rgba(124,58,237,0.25);
-}
-.progress > span {
-  display: block; height: 100%; width: 0%;
-  background: linear-gradient(90deg, var(--gold), var(--purple));
-  box-shadow: 0 0 16px rgba(212,175,55,0.6);
-  transition: width 300ms ease;
-}
-
-footer { opacity: 0.8; font-size: 12px; text-align: center; }
-a { color: var(--gold-soft); text-decoration: none; }
+.shop-modal h2 {color: var(--gold); margin-top: 0;}
+.item {display:flex; justify-content:space-between; align-items:center; margin:12px 0;}
+button.buy {background:linear-gradient(90deg,var(--gold),var(--purple)); border:none; color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:600;}
+.close-btn {margin-top: 20px; background: transparent; border: 1px solid var(--gold); color: var(--gold); border-radius: 10px; padding: 6px 14px; cursor: pointer;}
+.badge {margin-top:10px; font-size:14px; color:#f5d46b;}
 
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="dot" aria-hidden="true"></div>
-        <h1><span>Soul Generator</span></h1>
-      </div>
-      <div class="stats">
-        <div class="badge gold" id="soulsBadge">🜂 Souls: <span id="souls">0</span></div>
-        <div class="badge">⚡ Stage: <span class="stage-name" id="stageName">Ember</span></div>
-      </div>
-    </header><main class="arena" aria-live="polite">
-  <div class="halo" id="halo"></div>
-  <div class="orb" id="orb" role="button" aria-label="Generate soul energy"></div>
-  <div class="click-hint" id="hint">Tap the orb</div>
-</main>
-
-<div class="progress" aria-label="Progress to next stage">
-  <span id="progressFill"></span>
-</div>
-
-<div class="controls">
-  <button id="shareBtn">Share my stage</button>
-  <button id="resetBtn" title="Hold to confirm">Reset (hold)</button>
-</div>
-
-<footer>
-  <div>Made with ✨ in purple & gold. <a href="#" id="saveHint">Saved locally</a>.</div>
-</footer>
-
+  <h1>Soul Generator</h1>
+  <div class="orb" id="orb"></div>
+  <div id="souls">Souls: 0</div>
+  <button class="open-shop-btn" id="openShop">🛍️ Open Shop</button>  <div class="modal-bg" id="shopModal">
+    <div class="shop-modal">
+      <h2>Upgrades Shop</h2>
+      <div class="item"><span>✨ Soul Amplifier (+1 per tap)</span><button class="buy" data-up="1" data-cost="100">Buy 100💠</button></div>
+      <div class="item"><span>⚡ Aura Booster (auto +1/sec)</span><button class="buy" data-up="auto" data-cost="250">Buy 250💠</button></div>
+      <div class="item"><span>🔥 Quantum Surge (+10% boost)</span><button class="buy" data-up="mult" data-cost="500">Buy 500💠</button></div>
+      <div class="badge" id="msg"></div>
+      <button class="close-btn" id="closeShop">Close</button>
+    </div>
   </div>  <script>
-  ;(() => {
-    const orb = document.getElementById('orb');
-    const soulsEl = document.getElementById('souls');
-    const stageNameEl = document.getElementById('stageName');
-    const halo = document.getElementById('halo');
-    const progressFill = document.getElementById('progressFill');
-    const shareBtn = document.getElementById('shareBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const hint = document.getElementById('hint');
+    const orb=document.getElementById('orb');
+    const soulsEl=document.getElementById('souls');
+    const msg=document.getElementById('msg');
+    const openShop=document.getElementById('openShop');
+    const shopModal=document.getElementById('shopModal');
+    const closeShop=document.getElementById('closeShop');
 
-    const STAGES = [
-      { name: 'Ember', threshold: 0, aura: { p: '#7c3aed', g: '#d4af37' }, hum: 1.00 },
-      { name: 'Lumen', threshold: 100, aura: { p: '#8b5cf6', g: '#e4c04f' }, hum: 0.98 },
-      { name: 'Resonant', threshold: 1000, aura: { p: '#a855f7', g: '#f0cf62' }, hum: 0.96 },
-      { name: 'Cipher', threshold: 10000, aura: { p: '#c084fc', g: '#f6da7a' }, hum: 0.94 },
-      { name: 'Ascendant', threshold: 100000, aura: { p: '#e9d5ff', g: '#fff1a8' }, hum: 0.92 }
-    ];
+    let souls=Number(localStorage.getItem('souls')||0);
+    let perTap=Number(localStorage.getItem('perTap')||1);
+    let auto=Number(localStorage.getItem('auto')||0);
+    let mult=Number(localStorage.getItem('mult')||1);
 
-    const STORAGE_KEY = 'soulgen:v1';
-    const state = load() || { souls: 0, clicks: 0 };
-
-    let pressing = false;
-    let resetHoldTimer = null;
-
-    function save() {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
-    }
-    function load() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : null;
-      } catch (e) { return null; }
+    function save(){
+      localStorage.setItem('souls',souls);
+      localStorage.setItem('perTap',perTap);
+      localStorage.setItem('auto',auto);
+      localStorage.setItem('mult',mult);
     }
 
-    function format(n){
-      if (n >= 1e12) return (n/1e12).toFixed(2)+'T';
-      if (n >= 1e9) return (n/1e9).toFixed(2)+'B';
-      if (n >= 1e6) return (n/1e6).toFixed(2)+'M';
-      if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
-      return Math.floor(n).toString();
-    }
+    function update(){soulsEl.textContent='Souls: '+Math.floor(souls); save();}
 
-    function currentStageIndex(total) {
-      let idx = 0;
-      for (let i = 0; i < STAGES.length; i++) {
-        if (total >= STAGES[i].threshold) idx = i; else break;
-      }
-      return idx;
-    }
+    orb.onclick=()=>{souls+=perTap*mult;update();orb.style.transform='scale(0.95)';setTimeout(()=>orb.style.transform='scale(1)',100);};
 
-    function stageByIndex(i){ return STAGES[Math.max(0, Math.min(STAGES.length-1, i))]; }
-
-    function updateUI() {
-      const s = state.souls;
-      soulsEl.textContent = format(s);
-      const idx = currentStageIndex(s);
-      const stage = stageByIndex(idx);
-      stageNameEl.textContent = stage.name;
-
-      // Progress fill to next stage
-      const next = stageByIndex(idx+1);
-      let pct = 1;
-      if (next && next.threshold > stage.threshold) {
-        const span = next.threshold - stage.threshold;
-        pct = Math.min(1, (s - stage.threshold) / span);
-      }
-      progressFill.style.width = (pct * 100).toFixed(1) + '%';
-
-      // Aura visuals
-      halo.style.opacity = 0.85 + Math.min(0.15, s/500000);
-
-      orb.style.boxShadow = [
-        `0 0 60px ${hexToRgba(stage.aura.p, 0.45)}`,
-        `0 0 120px ${hexToRgba(stage.aura.g, 0.35)}`,
-        `inset 0 0 80px rgba(255,255,255,0.6)`,
-        `inset 0 0 160px ${hexToRgba(stage.aura.g, 0.3)}`
-      ].join(',');
-
-      hint.style.opacity = s > 10 ? 0 : 0.7;
-    }
-
-    function hexToRgba(hex, a){
-      const h = hex.replace('#','');
-      const bigint = parseInt(h, 16);
-      const r = (bigint >> 16) & 255;
-      const g = (bigint >> 8) & 255;
-      const b = bigint & 255;
-      return `rgba(${r}, ${g}, ${b}, ${a})`;
-    }
-
-    function spawnFloatNum(x, y, text) {
-      const f = document.createElement('div');
-      f.className = 'float-num';
-      f.style.left = x + 'px';
-      f.style.top = y + 'px';
-      f.style.color = Math.random() < 0.5 ? 'var(--gold-soft)' : 'var(--purple-soft)';
-      f.textContent = text;
-      document.body.appendChild(f);
-      setTimeout(() => f.remove(), 900);
-    }
-
-    function spawnParticles(cx, cy, count = 14) {
-      const rect = orb.getBoundingClientRect();
-      for (let i=0;i<count;i++){
-        const p = document.createElement('span');
-        p.className = 'particle';
-        const angle = Math.random() * Math.PI * 2;
-        const dist = 60 + Math.random() * 90;
-        const dx = Math.cos(angle) * dist;
-        const dy = Math.sin(angle) * dist;
-        p.style.setProperty('--dx', dx + 'px');
-        p.style.setProperty('--dy', dy + 'px');
-        p.style.left = (rect.left + rect.width/2) + 'px';
-        p.style.top  = (rect.top + rect.height/2) + 'px';
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 720);
-      }
-    }
-
-    function bumpOrb() {
-      orb.style.transform = 'scale(0.985)';
-      requestAnimationFrame(() => {
-        setTimeout(() => { orb.style.transform = 'scale(1)'; }, 90);
-      });
-    }
-
-    function onClick(e){
-      state.clicks++;
-      const gain = 1; // base per tap
-      state.souls += gain;
-      save();
-      bumpOrb();
-      updateUI();
-
-      // Click visuals
-      const x = e.clientX, y = e.clientY;
-      spawnFloatNum(x, y, '+1');
-      spawnParticles(x, y, 10);
-    }
-
-    orb.addEventListener('click', onClick);
-    orb.addEventListener('touchstart', (e) => { if (e.touches && e.touches[0]) { onClick(e.touches[0]); } }, {passive:true});
-
-    // Share
-    shareBtn.addEventListener('click', async () => {
-      const idx = currentStageIndex(state.souls);
-      const stage = stageByIndex(idx);
-      const text = `My soul reached ${stage.name} with ${state.souls} energy. Tap to awaken yours.`;
-      const url = location.href;
-      if (navigator.share) {
-        try { await navigator.share({ title: 'Soul Generator', text, url }); } catch (_) {}
-      } else {
-        try {
-          await navigator.clipboard.writeText(`${text} ${url}`);
-          shareBtn.textContent = 'Copied!';
-          setTimeout(()=>shareBtn.textContent='Share my stage', 1200);
-        } catch (_) {}
-      }
+    document.querySelectorAll('.buy').forEach(b=>{
+      b.onclick=()=>{
+        const cost=Number(b.dataset.cost);
+        const up=b.dataset.up;
+        if(souls<cost){msg.textContent='Not enough souls!';return;}
+        souls-=cost;
+        if(up==='1'){perTap+=1;msg.textContent='Soul Amplifier acquired!';}
+        if(up==='auto'){auto+=1;msg.textContent='Aura Booster active!';}
+        if(up==='mult'){mult+=0.1;msg.textContent='Quantum Surge!';}
+        update();
+      };
     });
 
-    // Reset (hold)
-    resetBtn.addEventListener('mousedown', () => {
-      pressing = true;
-      resetHoldTimer = setTimeout(() => {
-        if (!pressing) return;
-        state.souls = 0; state.clicks = 0; save(); updateUI();
-        resetBtn.textContent = 'Reset ✓';
-        setTimeout(()=> resetBtn.textContent = 'Reset (hold)', 1000);
-      }, 1100);
-    });
-    ['mouseup','mouseleave','touchend','touchcancel'].forEach(evt => {
-      resetBtn.addEventListener(evt, ()=>{ pressing = false; clearTimeout(resetHoldTimer); });
-    });
+    setInterval(()=>{if(auto>0){souls+=auto*mult;update();}},1000);
 
-    // First paint
-    updateUI();
+    openShop.onclick=()=>{shopModal.classList.add('active');};
+    closeShop.onclick=()=>{shopModal.classList.remove('active');};
+    shopModal.addEventListener('click',e=>{if(e.target===shopModal)shopModal.classList.remove('active');});
 
-    // Idle shimmer
-    let t = 0;
-    function loop(){
-      t += 0.005;
-      const pulse = 0.5 + 0.5 * Math.sin(t);
-      halo.style.filter = `blur(${18 + pulse*10}px)`;
-      requestAnimationFrame(loop);
-    }
-    loop();
-  })();
+    update();
   </script></body>
 </html>

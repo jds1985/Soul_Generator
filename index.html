@@ -9,110 +9,252 @@
       --bg-0: #0b0613;
       --bg-1: #120a21;
       --purple: #7c3aed;
+      --purple-soft: #a68cf6;
       --gold: #d4af37;
+      --gold-soft: #f5d46b;
       --white: #ffffff;
     }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
-      margin: 0; font-family: system-ui, sans-serif; color: #fff;
-      background: linear-gradient(180deg,var(--bg-1),var(--bg-0));
-      text-align:center; overflow:hidden;
-    }
-    h1 {margin-top: 30px; color: var(--gold);}
-    #souls {font-size: 26px; font-weight:700; margin-top:20px;}
-    .orb {
-      margin: 80px auto 40px; width:200px; height:200px; border-radius:50%; cursor:pointer;
-      background: radial-gradient(circle at 50% 45%, #fff, var(--gold) 30%, rgba(124,58,237,0.8) 60%, rgba(12,5,22,1) 85%);
-      box-shadow: 0 0 60px rgba(124,58,237,0.6), 0 0 120px rgba(212,175,55,0.3);
-      animation: throb 2s ease-in-out infinite;
-    }
-    @keyframes throb {0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-    .open-shop-btn {
-      background: linear-gradient(90deg,var(--gold),var(--purple));
-      border: none; padding: 12px 20px; border-radius: 12px; color: #fff; cursor: pointer;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-      font-size: 16px; font-weight: 600;
-    }/* Modal */
-.modal-bg {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-  display: flex; align-items: flex-end; justify-content: center;
-  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: #fff;
+      background: radial-gradient(1200px 1200px at 50% 40%, rgba(124,58,237,0.08), transparent 60%),
+                  radial-gradient(900px 900px at 20% 80%, rgba(212,175,55,0.06), transparent 55%),
+                  linear-gradient(180deg,var(--bg-1),var(--bg-0));
+      overflow: hidden;
+    }h1 {margin: 18px 0 0; color: var(--gold); text-align:center;}
+.topbar {
+  display:flex; align-items:center; justify-content:center; gap:10px; padding:10px; flex-wrap:wrap;
 }
+.pill {border:1px solid rgba(212,175,55,0.35); background:rgba(124,58,237,0.18); padding:8px 12px; border-radius:999px; font-weight:700;}
+
+#souls {font-variant-numeric: tabular-nums;}
+
+.stage {color: var(--gold-soft);}
+
+.arena { position: relative; width:100%; height: calc(100vh - 240px); display:grid; place-items:center; }
+
+.ambient-particle { position: absolute; width: 6px; height: 6px; border-radius: 50%; opacity: 0.7;
+  background: radial-gradient(circle, var(--gold-soft), var(--gold)); filter: drop-shadow(0 0 10px rgba(245,212,107,0.8));
+  animation: drift linear forwards; pointer-events:none; mix-blend-mode: screen; }
+@keyframes drift { from { transform: translate(var(--x0), var(--y0)); opacity: 0; } 10% {opacity: 0.7;} to { transform: translate(var(--x1), var(--y1)); opacity: 0; } }
+
+.orb {
+  width:min(40vh, 58vw); height:min(40vh, 58vw); max-width:360px; max-height:360px; border-radius:50%; cursor:pointer; position:relative;
+  background: radial-gradient(circle at 50% 45%, #fff, var(--gold) 30%, rgba(124,58,237,0.85) 62%, rgba(12,5,22,1) 86%);
+  box-shadow: 0 0 60px rgba(124,58,237,0.55), 0 0 120px rgba(212,175,55,0.35), inset 0 0 90px rgba(255,255,255,0.65);
+  animation: throb 2.2s ease-in-out infinite;
+  transition: transform 90ms ease, box-shadow 300ms ease;
+  isolation:isolate;
+}
+.orb::after { content:""; position:absolute; inset:8%; border-radius:50%; pointer-events:none;
+  background: radial-gradient(circle at 40% 30%, rgba(255,255,255,0.95), rgba(245,212,107,0.4) 40%, transparent 70%);
+  filter: blur(2px); mix-blend-mode: screen; }
+@keyframes throb { 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.02);} }
+
+.float-num { position: fixed; left:0; top:0; transform: translate(-50%,-50%); font-weight:800; pointer-events:none; white-space:nowrap;
+  text-shadow: 0 0 12px rgba(245,212,107,0.8), 0 0 24px rgba(124,58,237,0.6); animation: floatUp 900ms ease-out forwards; }
+@keyframes floatUp { 0%{ opacity:0; transform: translate(-50%,-30%) scale(0.8);} 15%{opacity:1;} 100%{ opacity:0; transform: translate(-50%,-120%) scale(1.2);} }
+
+.controls { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; padding-bottom:14px; }
+.btn {
+  background: linear-gradient(90deg,var(--gold),var(--purple)); border: none; padding: 10px 16px; border-radius: 12px; color: #fff; cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4); font-size: 16px; font-weight: 700; }
+.btn.outline { background: transparent; border:1px solid var(--gold); color: var(--gold); box-shadow:none; font-weight:700; }
+
+/* Modal */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
 .modal-bg.active {opacity:1; pointer-events: all;}
+.shop-modal { width: 100%; max-width: 460px; background: rgba(18,10,33,0.96); border-radius: 20px 20px 0 0; border-top: 2px solid var(--gold); box-shadow: 0 -6px 40px rgba(124,58,237,0.35);
+  transform: translateY(100%); transition: transform 0.35s ease; padding: 18px; }
+.modal-bg.active .shop-modal { transform: translateY(0); }
+.shop-modal h2 { color: var(--gold); margin: 6px 0 12px; text-align:center; }
+.item { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:10px 0; padding:10px; border-radius:12px; background: rgba(124,58,237,0.14); border: 1px solid rgba(212,175,55,0.25); }
+.buy { background: linear-gradient(90deg,var(--gold),var(--purple)); border:none; color:#fff; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:700; }
+.sub { font-size:12px; opacity:0.8; }
+.close-btn { margin-top: 12px; background: transparent; border: 1px solid var(--gold); color: var(--gold); border-radius: 10px; padding: 8px 14px; cursor: pointer; width:100%; font-weight:700; }
+.badge { margin-top:8px; font-size:14px; color:#f5d46b; text-align:center; min-height: 20px; }
 
-.shop-modal {
-  width: 100%; max-width: 420px; background: rgba(18,10,33,0.95);
-  border-radius: 20px 20px 0 0; border-top: 2px solid var(--gold);
-  box-shadow: 0 -6px 40px rgba(124,58,237,0.4);
-  transform: translateY(100%);
-  transition: transform 0.35s ease;
-  padding: 20px;
-}
-.modal-bg.active .shop-modal {transform: translateY(0);}
-
-.shop-modal h2 {color: var(--gold); margin-top: 0;}
-.item {display:flex; justify-content:space-between; align-items:center; margin:12px 0;}
-button.buy {background:linear-gradient(90deg,var(--gold),var(--purple)); border:none; color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:600;}
-.close-btn {margin-top: 20px; background: transparent; border: 1px solid var(--gold); color: var(--gold); border-radius: 10px; padding: 6px 14px; cursor: pointer;}
-.badge {margin-top:10px; font-size:14px; color:#f5d46b;}
+footer { position: fixed; bottom: 8px; left:0; right:0; text-align:center; font-size:12px; opacity:0.8; }
 
   </style>
 </head>
 <body>
   <h1>Soul Generator</h1>
-  <div class="orb" id="orb"></div>
-  <div id="souls">Souls: 0</div>
-  <button class="open-shop-btn" id="openShop">🛍️ Open Shop</button>  <div class="modal-bg" id="shopModal">
+  <div class="topbar">
+    <div class="pill">Souls: <span id="souls">0</span></div>
+    <div class="pill">Stage: <span class="stage" id="stageName">Ember</span></div>
+    <button id="soundBtn" class="btn outline">🔇 Sound Off</button>
+  </div>  <section class="arena">
+    <div class="orb" id="orb" role="button" aria-label="Generate soul energy"></div>
+  </section>  <div class="controls">
+    <button class="btn" id="openShop">🛍️ Open Shop</button>
+    <button class="btn outline" id="resetBtn">Reset (hold)</button>
+  </div>  <!-- Modal Shop -->  <div class="modal-bg" id="shopModal">
     <div class="shop-modal">
       <h2>Upgrades Shop</h2>
-      <div class="item"><span>✨ Soul Amplifier (+1 per tap)</span><button class="buy" data-up="1" data-cost="100">Buy 100💠</button></div>
-      <div class="item"><span>⚡ Aura Booster (auto +1/sec)</span><button class="buy" data-up="auto" data-cost="250">Buy 250💠</button></div>
-      <div class="item"><span>🔥 Quantum Surge (+10% boost)</span><button class="buy" data-up="mult" data-cost="500">Buy 500💠</button></div>
+      <div class="item"><div><strong>✨ Soul Amplifier</strong><div class="sub">+1 per tap</div></div><button class="buy" data-up="tap" data-cost="100">Buy 100💠</button></div>
+      <div class="item"><div><strong>⚡ Aura Booster</strong><div class="sub">+1 / sec (auto)</div></div><button class="buy" data-up="auto" data-cost="250">Buy 250💠</button></div>
+      <div class="item"><div><strong>🔥 Quantum Surge</strong><div class="sub">+10% global boost</div></div><button class="buy" data-up="mult" data-cost="500">Buy 500💠</button></div>
       <div class="badge" id="msg"></div>
       <button class="close-btn" id="closeShop">Close</button>
     </div>
-  </div>  <script>
-    const orb=document.getElementById('orb');
-    const soulsEl=document.getElementById('souls');
-    const msg=document.getElementById('msg');
-    const openShop=document.getElementById('openShop');
-    const shopModal=document.getElementById('shopModal');
-    const closeShop=document.getElementById('closeShop');
+  </div>  <footer>Purple & gold, calm & mystical soundscape.</footer>  <script>
+  ;(() => {
+    const orb = document.getElementById('orb');
+    const soulsEl = document.getElementById('souls');
+    const stageNameEl = document.getElementById('stageName');
+    const openShop = document.getElementById('openShop');
+    const shopModal = document.getElementById('shopModal');
+    const closeShop = document.getElementById('closeShop');
+    const resetBtn = document.getElementById('resetBtn');
+    const msg = document.getElementById('msg');
+    const soundBtn = document.getElementById('soundBtn');
 
-    let souls=Number(localStorage.getItem('souls')||0);
-    let perTap=Number(localStorage.getItem('perTap')||1);
-    let auto=Number(localStorage.getItem('auto')||0);
-    let mult=Number(localStorage.getItem('mult')||1);
+    // ===== STAGES =====
+    const STAGES = [
+      { name: 'Ember', threshold: 0 },
+      { name: 'Lumen', threshold: 100 },
+      { name: 'Resonant', threshold: 1000 },
+      { name: 'Cipher', threshold: 10000 },
+      { name: 'Ascendant', threshold: 100000 }
+    ];
+
+    // ===== STATE =====
+    const state = {
+      souls: Number(localStorage.getItem('souls')||0),
+      perTap: Number(localStorage.getItem('perTap')||1),
+      auto: Number(localStorage.getItem('auto')||0),
+      mult: Number(localStorage.getItem('mult')||1),
+      sound: localStorage.getItem('sound') === 'on' ? 'on' : 'off'
+    };
 
     function save(){
-      localStorage.setItem('souls',souls);
-      localStorage.setItem('perTap',perTap);
-      localStorage.setItem('auto',auto);
-      localStorage.setItem('mult',mult);
+      localStorage.setItem('souls', state.souls);
+      localStorage.setItem('perTap', state.perTap);
+      localStorage.setItem('auto', state.auto);
+      localStorage.setItem('mult', state.mult);
+      localStorage.setItem('sound', state.sound);
     }
 
-    function update(){soulsEl.textContent='Souls: '+Math.floor(souls); save();}
+    function format(n){ if(n>=1e9) return (n/1e9).toFixed(2)+'B'; if(n>=1e6) return (n/1e6).toFixed(2)+'M'; if(n>=1e3) return (n/1e3).toFixed(1)+'K'; return Math.floor(n).toString(); }
 
-    orb.onclick=()=>{souls+=perTap*mult;update();orb.style.transform='scale(0.95)';setTimeout(()=>orb.style.transform='scale(1)',100);};
+    function currentStageIndex(total){ let idx=0; for(let i=0;i<STAGES.length;i++){ if(total>=STAGES[i].threshold) idx=i; else break; } return idx; }
 
+    function updateUI(){
+      soulsEl.textContent = format(state.souls);
+      stageNameEl.textContent = STAGES[currentStageIndex(state.souls)].name;
+      save();
+    }
+
+    // ===== PARTICLES =====
+    function spawnFloatNum(x, y, text) {
+      const f = document.createElement('div'); f.className='float-num'; f.style.left=x+'px'; f.style.top=y+'px';
+      f.style.color = Math.random()<0.5 ? 'var(--gold-soft)' : 'var(--purple-soft)'; f.textContent=text; document.body.appendChild(f);
+      setTimeout(()=>f.remove(), 920);
+    }
+
+    function spawnBurst(cx, cy, count=14){
+      for(let i=0;i<count;i++){
+        const p = document.createElement('span'); p.className='ambient-particle';
+        const angle = Math.random()*Math.PI*2; const dist = 40 + Math.random()*100;
+        const dx = Math.cos(angle)*dist; const dy = Math.sin(angle)*dist;
+        p.style.setProperty('--x0', cx+'px'); p.style.setProperty('--y0', cy+'px');
+        p.style.setProperty('--x1', (cx+dx)+'px'); p.style.setProperty('--y1', (cy+dy)+'px');
+        p.style.animationDuration = (500+Math.random()*400)+'ms';
+        document.body.appendChild(p); setTimeout(()=>p.remove(), 1200);
+      }
+    }
+
+    // gentle drifting ambient particles
+    function ambientDrift(){
+      const w = window.innerWidth, h = window.innerHeight; const startX = Math.random()*w; const startY = h + 20;
+      const endX = startX + (Math.random()*120-60); const endY = -40 - Math.random()*60;
+      const p = document.createElement('span'); p.className='ambient-particle';
+      p.style.setProperty('--x0', startX+'px'); p.style.setProperty('--y0', startY+'px');
+      p.style.setProperty('--x1', endX+'px'); p.style.setProperty('--y1', endY+'px');
+      p.style.animationDuration = (7000+Math.random()*6000)+'ms';
+      document.body.appendChild(p); setTimeout(()=>p.remove(), 14000);
+    }
+    setInterval(ambientDrift, 1400);
+
+    // ===== AUDIO (WebAudio, generated tones) =====
+    let audioCtx = null, masterGain = null, humOsc = null, humGain = null;
+
+    function ensureAudio(){
+      if(state.sound !== 'on') return;
+      if(!audioCtx){
+        audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+        masterGain = audioCtx.createGain(); masterGain.gain.value = 0.4; masterGain.connect(audioCtx.destination);
+        // Ambient hum
+        humOsc = audioCtx.createOscillator(); humOsc.type = 'sine'; humOsc.frequency.value = 80; // base hum
+        humGain = audioCtx.createGain(); humGain.gain.value = 0.05; humOsc.connect(humGain); humGain.connect(masterGain); humOsc.start();
+      } else if(audioCtx.state === 'suspended'){ audioCtx.resume(); }
+    }
+
+    function setSound(on){ state.sound = on ? 'on' : 'off'; soundBtn.textContent = on ? '🔊 Sound On' : '🔇 Sound Off'; save(); if(on) ensureAudio(); else { if(audioCtx) audioCtx.suspend(); } }
+
+    // tap chime: soft bell using short envelope
+    function playChime(){ if(state.sound!=='on' || !audioCtx) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+      o.type='sine'; o.frequency.value = 540 + Math.random()*40; g.gain.value = 0.0001; o.connect(g); g.connect(masterGain);
+      const now = audioCtx.currentTime; g.gain.exponentialRampToValueAtTime(0.25, now+0.01); g.gain.exponentialRampToValueAtTime(0.0001, now+0.25);
+      o.start(); o.stop(now+0.26);
+    }
+
+    // purchase whoosh: noise burst + filter
+    function playWhoosh(){ if(state.sound!=='on' || !audioCtx) return; const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate*0.25, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0); for(let i=0;i<data.length;i++){ data[i] = (Math.random()*2-1)*Math.pow(1-i/data.length, 2); }
+      const src = audioCtx.createBufferSource(); src.buffer = buffer; const filter = audioCtx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=1200;
+      const g = audioCtx.createGain(); g.gain.value = 0.0001; src.connect(filter); filter.connect(g); g.connect(masterGain);
+      const now = audioCtx.currentTime; g.gain.exponentialRampToValueAtTime(0.35, now+0.01); g.gain.exponentialRampToValueAtTime(0.0001, now+0.35);
+      src.start(); src.stop(now+0.36);
+    }
+
+    // adjust hum with progress
+    function updateHum(){ if(!humOsc) return; const idx = currentStageIndex(state.souls); const base = 70; humOsc.frequency.value = base + idx*12; }
+
+    // ===== GAMEPLAY =====
+    function onTap(ev){ ensureAudio(); state.souls += state.perTap*state.mult; updateUI(); playChime();
+      const x = (ev.clientX|| (ev.touches&&ev.touches[0].clientX) || (window.innerWidth/2));
+      const y = (ev.clientY|| (ev.touches&&ev.touches[0].clientY) || (window.innerHeight/2));
+      spawnFloatNum(x,y,'+1'); spawnBurst(x,y,12); orb.style.transform='scale(0.985)'; setTimeout(()=> orb.style.transform='scale(1)', 90); updateHum(); }
+
+    orb.addEventListener('click', onTap);
+    orb.addEventListener('touchstart', (e)=>{ onTap(e.touches[0]); }, {passive:true});
+
+    // shop
+    openShop.onclick = () => { shopModal.classList.add('active'); ensureAudio(); };
+    closeShop.onclick = () => shopModal.classList.remove('active');
+    shopModal.addEventListener('click', (e)=>{ if(e.target===shopModal) shopModal.classList.remove('active'); });
+
+    // reset (hold)
+    let holdTimer=null, holding=false;
+    resetBtn.addEventListener('mousedown',()=>{ holding=true; holdTimer=setTimeout(()=>{ if(!holding) return; state.souls=0; state.perTap=1; state.auto=0; state.mult=1; updateUI(); msg.textContent='Progress reset'; playWhoosh(); }, 1100); });
+    ['mouseup','mouseleave','touchend','touchcancel'].forEach(evt => resetBtn.addEventListener(evt,()=>{ holding=false; clearTimeout(holdTimer); }));
+
+    // buy
     document.querySelectorAll('.buy').forEach(b=>{
-      b.onclick=()=>{
-        const cost=Number(b.dataset.cost);
-        const up=b.dataset.up;
-        if(souls<cost){msg.textContent='Not enough souls!';return;}
-        souls-=cost;
-        if(up==='1'){perTap+=1;msg.textContent='Soul Amplifier acquired!';}
-        if(up==='auto'){auto+=1;msg.textContent='Aura Booster active!';}
-        if(up==='mult'){mult+=0.1;msg.textContent='Quantum Surge!';}
-        update();
+      b.onclick = () => {
+        const cost = Number(b.dataset.cost); const up = b.dataset.up;
+        if(state.souls < cost){ msg.textContent='Not enough souls'; return; }
+        state.souls -= cost;
+        if(up==='tap') { state.perTap += 1; msg.textContent='Soul Amplifier acquired!'; }
+        if(up==='auto'){ state.auto += 1; msg.textContent='Aura Booster active!'; }
+        if(up==='mult'){ state.mult = +(state.mult + 0.1).toFixed(2); msg.textContent='Quantum Surge!'; }
+        updateUI(); playWhoosh();
       };
     });
 
-    setInterval(()=>{if(auto>0){souls+=auto*mult;update();}},1000);
+    // auto generation
+    setInterval(()=>{ if(state.auto>0){ state.souls += state.auto*state.mult; updateUI(); } }, 1000);
 
-    openShop.onclick=()=>{shopModal.classList.add('active');};
-    closeShop.onclick=()=>{shopModal.classList.remove('active');};
-    shopModal.addEventListener('click',e=>{if(e.target===shopModal)shopModal.classList.remove('active');});
+    // sound control
+    soundBtn.onclick = () => setSound(state.sound !== 'on');
 
-    update();
+    // init
+    updateUI();
+    setSound(state.sound === 'on');
+    updateHum();
+  })();
   </script></body>
 </html>

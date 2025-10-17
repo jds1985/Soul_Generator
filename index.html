@@ -2,7 +2,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Soul Generator v3 — Cipher Tech Reactor Edition</title>
+  <title>Soul Generator v3.1 — Cipher Tech Reactor Edition</title>
   <meta name="description" content="Tap the core to awaken souls. Cinematic particles, turbine hum, stage ascension, and a sleek Cipher Tech boot sequence." />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -19,8 +19,8 @@
     html, body { height: 100%; }
     body {
       margin: 0; color: var(--text);
-      background: radial-gradient(1200px 1200px at 50% 40%, rgba(124,58,237,0.08), transparent 60%),
-                  radial-gradient(900px 900px at 20% 80%, rgba(212,175,55,0.06), transparent 55%),
+      background: radial-gradient(1200px 1200px at 50% 40%, rgba(124,58,237,0.10), transparent 60%),
+                  radial-gradient(900px 900px at 20% 80%, rgba(212,175,55,0.08), transparent 55%),
                   linear-gradient(180deg, var(--bg-1), var(--bg-0));
       font-family: Orbitron, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
       overflow: hidden;
@@ -34,21 +34,21 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
 .arena { position: relative; width:100%; height: calc(100vh - 220px); display:grid; place-items:center; }
 
 /* Background pulse wave */
-.pulse { position: absolute; inset: 0; pointer-events:none; opacity: 0; transform: scale(0.9); background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.25), rgba(124,58,237,0.18) 35%, transparent 70%); filter: blur(16px); transition: opacity 500ms ease, transform 600ms ease; }
-.pulse.show { opacity: 0.6; transform: scale(1.15); }
+.pulse { position: absolute; inset: 0; pointer-events:none; opacity: 0; transform: scale(0.9); background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.28), rgba(124,58,237,0.22) 35%, transparent 72%); filter: blur(20px); transition: opacity 650ms ease, transform 900ms ease; }
+.pulse.show { opacity: 0.85; transform: scale(1.25); }
 
 /* Orb */
 .orb { width:min(42vh, 60vw); height:min(42vh, 60vw); max-width:380px; max-height:380px; border-radius:50%; cursor:pointer; position:relative; isolation:isolate;
-  background: radial-gradient(circle at 50% 45%, #fff, var(--gold) 30%, rgba(124,58,237,0.88) 62%, rgba(12,5,22,1) 86%);
-  box-shadow: 0 0 60px rgba(124,58,237,0.55), 0 0 120px rgba(212,175,55,0.35), inset 0 0 90px rgba(255,255,255,0.65);
+  background: radial-gradient(circle at 50% 45%, #fff, var(--gold) 30%, rgba(124,58,237,0.90) 62%, rgba(12,5,22,1) 86%);
+  box-shadow: 0 0 60px rgba(124,58,237,0.6), 0 0 140px rgba(212,175,55,0.45), inset 0 0 90px rgba(255,255,255,0.65);
   animation: throb 2.4s ease-in-out infinite; transition: transform 90ms ease, box-shadow 300ms ease; }
 .orb::after { content:""; position:absolute; inset:8%; border-radius:50%; pointer-events:none; background: radial-gradient(circle at 40% 30%, rgba(255,255,255,0.95), rgba(245,212,107,0.4) 40%, transparent 70%); filter: blur(2px); mix-blend-mode: screen; }
 @keyframes throb { 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.02);} }
 
-/* Tap particles */
-.particle { position: fixed; width: 10px; height: 10px; border-radius: 50%; pointer-events:none; mix-blend-mode: screen; opacity: 0.95; filter: blur(0.4px) drop-shadow(0 0 10px rgba(255,255,255,0.45)); }
-.particle.gold { background: radial-gradient(circle, var(--gold-soft), var(--gold)); box-shadow: 0 0 18px rgba(245,212,107,0.8); }
-.particle.purple { background: radial-gradient(circle, var(--purple-soft), var(--purple)); box-shadow: 0 0 18px rgba(168,140,246,0.8); }
+/* Particle pool items */
+.particle { position: fixed; width: 10px; height: 10px; border-radius: 50%; pointer-events:none; mix-blend-mode: screen; opacity: 0; filter: blur(0.4px) drop-shadow(0 0 10px rgba(255,255,255,0.45)); will-change: transform, opacity; }
+.particle.gold { background: radial-gradient(circle, var(--gold-soft), var(--gold)); box-shadow: 0 0 20px rgba(245,212,107,0.95); }
+.particle.purple { background: radial-gradient(circle, var(--purple-soft), var(--purple)); box-shadow: 0 0 20px rgba(168,140,246,0.95); }
 
 /* Ambient slow embers */
 .ember { position: fixed; width: 6px; height: 6px; border-radius: 50%; background: radial-gradient(circle, var(--gold-soft), var(--gold)); mix-blend-mode: screen; opacity: 0.75; filter: drop-shadow(0 0 10px rgba(245,212,107,0.9)); pointer-events:none; animation: ember 12s linear infinite; }
@@ -118,7 +118,7 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
       <div class="boot-line" id="o3">Offline</div>
     </div>
   </div>  <!-- Watermarks -->  <div class="wm-right">Powered by Cipher Tech Systems</div>
-  <div class="wm-left">v3.0 — Cipher Tech Reactor</div>  <div class="ascend" id="ascendMsg"></div>  <script>
+  <div class="wm-left">v3.1 — Cipher Tech Reactor</div>  <div class="ascend" id="ascendMsg"></div>  <script>
   ;(() => {
     // ===== Elements =====
     const orb = document.getElementById('orb');
@@ -189,34 +189,49 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
       save();
     }
 
-    // ===== Particles & Pulse =====
-    function spawnBurst(cx, cy, count=34){
+    // ===== Particle Pool =====
+    const POOL_SIZE = 80;
+    const particles = [];
+    for(let i=0;i<POOL_SIZE;i++){
+      const p = document.createElement('div');
+      p.className = 'particle ' + (i%2 ? 'gold' : 'purple');
+      p.style.opacity = 0; p.style.transform = 'translate(-50%,-50%) scale(0.4)';
+      document.body.appendChild(p);
+      particles.push({ el:p, busy:false });
+    }
+
+    function fireParticle(cx, cy, angle, dist, life){
+      // find an available particle
+      const slot = particles.find(pt => !pt.busy) || particles[0];
+      slot.busy = true;
+      const el = slot.el;
+      const tx = cx + Math.cos(angle)*dist;
+      const ty = cy + Math.sin(angle)*dist;
+      el.style.left = cx + 'px';
+      el.style.top = cy + 'px';
+      el.style.opacity = 1;
+      const keyframes = [
+        { transform:`translate(-50%,-50%) scale(1)`, opacity: 0.98 },
+        { transform:`translate(${tx-cx}px, ${ty-cy}px) scale(0.2)`, opacity: 0 }
+      ];
+      const anim = el.animate(keyframes, { duration: life, easing:'cubic-bezier(.22,.61,.36,1)', fill:'forwards' });
+      anim.onfinish = () => { el.style.opacity = 0; slot.busy = false; };
+    }
+
+    function spawnBurst(cx, cy, count=36){
       for(let i=0;i<count;i++){
-        const p = document.createElement('div');
-        p.className = 'particle ' + (i % 2 ? 'gold' : 'purple');
-        p.style.left = cx + 'px';
-        p.style.top = cy + 'px';
         const angle = Math.random()*Math.PI*2;
-        const dist = 80 + Math.random()*180;
-        const dur = 600 + Math.random()*900;
-        const tx = cx + Math.cos(angle)*dist;
-        const ty = cy + Math.sin(angle)*dist;
-        const rot = (Math.random()*40-20);
-        p.animate([
-          { transform: `translate(-50%,-50%) scale(1) rotate(0deg)`, opacity: 0.98 },
-          { transform: `translate(${tx-cx}px, ${ty-cy}px) scale(0.2) rotate(${rot}deg)`, opacity: 0 }
-        ], { duration: dur, easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'forwards' });
-        document.body.appendChild(p);
-        setTimeout(()=> p.remove(), dur+60);
+        const dist = 120 + Math.random()*220; // longer reach
+        const life = 1200 + Math.random()*700; // longer-lived
+        fireParticle(cx, cy, angle, dist, life);
       }
     }
 
     function pulseWave(){
       pulse.classList.remove('show');
-      // force reflow
-      void pulse.offsetWidth;
+      void pulse.offsetWidth; // reflow
       pulse.classList.add('show');
-      setTimeout(()=> pulse.classList.remove('show'), 520);
+      setTimeout(()=> pulse.classList.remove('show'), 900);
     }
 
     // Ambient drifting embers
@@ -231,7 +246,7 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
     }
     setInterval(ambientDrift, 1400);
 
-    // ===== Audio (Web Audio API) =====
+    // ===== Audio (Web Audio API) with persistence =====
     let audioCtx=null, masterGain=null, reverb=null, baseHumOsc=null, baseHumGain=null, turbineNoise=null, turbineFilter=null, turbineGain=null;
     let tapBoostTimeout=null; // cooldown for turbine
 
@@ -250,23 +265,23 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
       if(state.sound !== 'on') return;
       if(!audioCtx){
         audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-        masterGain = audioCtx.createGain(); masterGain.gain.value = 0.45; masterGain.connect(audioCtx.destination);
-        // Reverb
-        const conv = audioCtx.createConvolver(); conv.buffer = makeImpulseResponse(audioCtx, 2.6, 2.8); reverb = audioCtx.createGain(); reverb.gain.value = 0.18; conv.connect(reverb); reverb.connect(masterGain);
+        masterGain = audioCtx.createGain(); masterGain.gain.value = 0.5; masterGain.connect(audioCtx.destination);
+
+        // Reverb path
+        const conv = audioCtx.createConvolver(); conv.buffer = makeImpulseResponse(audioCtx, 2.8, 2.9); reverb = audioCtx.createGain(); reverb.gain.value = 0.2; conv.connect(reverb); reverb.connect(masterGain);
 
         // Base hum (sine)
         baseHumOsc = audioCtx.createOscillator(); baseHumOsc.type='sine'; baseHumOsc.frequency.value = 70 + currentStageIndex(state.souls)*12; // stage-based
-        baseHumGain = audioCtx.createGain(); baseHumGain.gain.value = 0.05; baseHumOsc.connect(baseHumGain); baseHumGain.connect(conv); baseHumGain.connect(masterGain);
-        baseHumOsc.start();
+        baseHumGain = audioCtx.createGain(); baseHumGain.gain.value = 0.06; baseHumOsc.connect(baseHumGain); baseHumGain.connect(conv); baseHumGain.connect(masterGain); baseHumOsc.start();
 
-        // Turbine layer (filtered noise)
-        const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate*2, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0); for(let i=0;i<data.length;i++){ data[i] = Math.random()*2-1; }
-        turbineNoise = audioCtx.createBufferSource(); turbineNoise.buffer = buffer; turbineNoise.loop = true;
-        turbineFilter = audioCtx.createBiquadFilter(); turbineFilter.type='lowpass'; turbineFilter.frequency.value = 800;
-        turbineGain = audioCtx.createGain(); turbineGain.gain.value = 0.02; // idle low
-        turbineNoise.connect(turbineFilter); turbineFilter.connect(turbineGain); turbineGain.connect(conv); turbineGain.connect(masterGain);
-        turbineNoise.start();
+        // Turbine layer (continuous noise -> filter -> gain)
+        const size = audioCtx.sampleRate; // 1 second buffer
+        const buffer = audioCtx.createBuffer(1, size, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0); for(let i=0;i<size;i++){ data[i] = Math.random()*2-1; }
+        turbineNoise = audioCtx.createBufferSource(); turbineNoise.buffer = buffer; turbineNoise.loop = true; turbineNoise.loopStart = 0; turbineNoise.loopEnd = 1;
+        turbineFilter = audioCtx.createBiquadFilter(); turbineFilter.type='lowpass'; turbineFilter.frequency.value = 900;
+        turbineGain = audioCtx.createGain(); turbineGain.gain.value = 0.06; // slightly stronger than before
+        turbineNoise.connect(turbineFilter); turbineFilter.connect(turbineGain); turbineGain.connect(conv); turbineGain.connect(masterGain); turbineNoise.start();
       } else if (audioCtx.state === 'suspended') { audioCtx.resume(); }
     }
 
@@ -276,20 +291,27 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
 
     function turbineBoost(){ if(state.sound!=='on' || !audioCtx) return; // raise filter cutoff and gain briefly
       const now = audioCtx.currentTime;
-      const targetF = Math.min(2000, turbineFilter.frequency.value + 220); // open up
-      const targetG = Math.min(0.35, turbineGain.gain.value + 0.04);
+      const targetF = Math.min(2200, turbineFilter.frequency.value + 250); // open up more
+      const targetG = Math.min(0.4, turbineGain.gain.value + 0.05);
       turbineFilter.frequency.cancelScheduledValues(now);
       turbineGain.gain.cancelScheduledValues(now);
-      turbineFilter.frequency.linearRampToValueAtTime(targetF, now+0.08);
-      turbineGain.gain.linearRampToValueAtTime(targetG, now+0.08);
-      // cooldown after 0.9s without taps
+      turbineFilter.frequency.linearRampToValueAtTime(targetF, now+0.1);
+      turbineGain.gain.linearRampToValueAtTime(targetG, now+0.1);
+      // cooldown after 1.2s without taps
       if(tapBoostTimeout) clearTimeout(tapBoostTimeout);
       tapBoostTimeout = setTimeout(()=>{
         const n = audioCtx.currentTime;
-        turbineFilter.frequency.linearRampToValueAtTime(800, n+0.6);
-        turbineGain.gain.linearRampToValueAtTime(0.02, n+0.6);
-      }, 900);
+        turbineFilter.frequency.linearRampToValueAtTime(900, n+0.8);
+        turbineGain.gain.linearRampToValueAtTime(0.06, n+0.8);
+      }, 1200);
     }
+
+    // Heartbeat to keep audio alive after tab sleep or OS power save
+    setInterval(()=>{
+      if(state.sound==='on' && audioCtx && audioCtx.state==='suspended'){
+        audioCtx.resume();
+      }
+    }, 10000);
 
     // ===== Interactions =====
     function onTap(ev){ ensureAudio(); state.souls += state.perTap*state.mult; updateUI();
@@ -320,7 +342,7 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
       setTimeout(()=>{
         state.souls=0; state.perTap=1; state.auto=0; state.mult=1; save(); updateUI();
         // hide overlay again
-        setTimeout(()=>{ overlay.classList.add('hidden'); offText.style.display='none'; bootText.style.display='block'; ['o1','o2','o3'].forEach(id=> document.getElementById(id).classList.remove('show')); if(baseHumGain){ baseHumGain.gain.value=0.05; } if(turbineGain){ turbineGain.gain.value=0.02; } }, 700);
+        setTimeout(()=>{ overlay.classList.add('hidden'); offText.style.display='none'; bootText.style.display='block'; ['o1','o2','o3'].forEach(id=> document.getElementById(id).classList.remove('show')); if(baseHumGain){ baseHumGain.gain.value=0.06; } if(turbineGain){ turbineGain.gain.value=0.06; } }, 700);
       }, 1200);
     }
 
@@ -342,6 +364,15 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
 
     // Sound control
     soundBtn.onclick = () => setSound(state.sound !== 'on');
+
+    // Stage flare (visual emphasis on ascension)
+    function stageFlare(){
+      pulseWave();
+      orb.style.boxShadow = '0 0 80px rgba(124,58,237,0.8), 0 0 180px rgba(212,175,55,0.6), inset 0 0 110px rgba(255,255,255,0.8)';
+      setTimeout(()=>{
+        orb.style.boxShadow = '0 0 60px rgba(124,58,237,0.6), 0 0 140px rgba(212,175,55,0.45), inset 0 0 90px rgba(255,255,255,0.65)';
+      }, 1200);
+    }
 
     // Initial paint
     updateUI();

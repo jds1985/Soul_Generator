@@ -2,8 +2,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Soul Generator v3.1 — Cipher Tech Reactor Edition</title>
-  <meta name="description" content="Tap the core to awaken souls. Cinematic particles, turbine hum, stage ascension, and a sleek Cipher Tech boot sequence." />
+  <title>Soul Generator v3.2 — Cipher Tech Reactor (Winds of Ascension)</title>
+  <meta name="description" content="Tap the core to awaken souls. Cinematic particles, wind-chime ambience, sparkling taps, gust-of-wind ascensions, stage-evolving orb, and Cipher Tech boot sequence." />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -13,18 +13,25 @@
       --purple-soft: #a88cf7;
       --gold: #d4af37;     /* primary gold */
       --gold-soft: #f5d46b;
-      --text: #f7f6ff;
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0; color: var(--text);
-      background: radial-gradient(1200px 1200px at 50% 40%, rgba(124,58,237,0.10), transparent 60%),
-                  radial-gradient(900px 900px at 20% 80%, rgba(212,175,55,0.08), transparent 55%),
-                  linear-gradient(180deg, var(--bg-1), var(--bg-0));
-      font-family: Orbitron, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
-      overflow: hidden;
-    }/* Top HUD */
+      --text: #f7f6ff;/* stage-driven colors (updated at runtime) */
+  --orb-inner: #ffffff;
+  --orb-mid: #d4af37;
+  --orb-outer: rgba(124,58,237,0.90);
+  --pulse-gold: rgba(212,175,55,0.30);
+  --pulse-purple: rgba(124,58,237,0.24);
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; color: var(--text);
+  background: radial-gradient(1200px 1200px at 50% 40%, rgba(124,58,237,0.10), transparent 60%),
+              radial-gradient(900px 900px at 20% 80%, rgba(212,175,55,0.08), transparent 55%),
+              linear-gradient(180deg, var(--bg-1), var(--bg-0));
+  font-family: Orbitron, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
+  overflow: hidden;
+}
+
+/* Top HUD */
 header { display:flex; align-items:center; justify-content:center; gap:14px; padding:12px; flex-wrap:wrap; }
 .pill { border:1px solid rgba(212,175,55,0.35); background:rgba(124,58,237,0.18); padding:8px 12px; border-radius:999px; font-weight:700; }
 .btn { background: linear-gradient(90deg,var(--gold),var(--purple)); border: none; padding: 10px 16px; border-radius: 12px; color: #fff; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.4); font-size: 14px; font-weight: 700; }
@@ -34,21 +41,32 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
 .arena { position: relative; width:100%; height: calc(100vh - 220px); display:grid; place-items:center; }
 
 /* Background pulse wave */
-.pulse { position: absolute; inset: 0; pointer-events:none; opacity: 0; transform: scale(0.9); background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.28), rgba(124,58,237,0.22) 35%, transparent 72%); filter: blur(20px); transition: opacity 650ms ease, transform 900ms ease; }
+.pulse { position: absolute; inset: 0; pointer-events:none; opacity: 0; transform: scale(0.9);
+  background: radial-gradient(circle at 50% 50%, var(--pulse-gold), var(--pulse-purple) 35%, transparent 72%);
+  filter: blur(22px);
+  transition: opacity 650ms ease, transform 900ms ease;
+}
 .pulse.show { opacity: 0.85; transform: scale(1.25); }
 
-/* Orb */
+/* Rainbow wave on level-up */
+.wave { position: absolute; left:50%; top:50%; width:30vmax; height:30vmax; transform: translate(-50%,-50%) scale(0.6); border-radius:50%; pointer-events:none; opacity:0.9;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6), rgba(255,255,255,0.12) 35%, transparent 70%);
+  mix-blend-mode: screen; filter: hue-rotate(0deg) blur(10px); animation: waveOut 1400ms ease-out forwards;
+}
+@keyframes waveOut { 0% { transform: translate(-50%,-50%) scale(0.6); opacity:0.9; filter:hue-rotate(0deg) blur(10px);} 100% { transform: translate(-50%,-50%) scale(2.1); opacity:0; filter:hue-rotate(180deg) blur(20px);} }
+
+/* Orb (colors updated per stage via CSS vars) */
 .orb { width:min(42vh, 60vw); height:min(42vh, 60vw); max-width:380px; max-height:380px; border-radius:50%; cursor:pointer; position:relative; isolation:isolate;
-  background: radial-gradient(circle at 50% 45%, #fff, var(--gold) 30%, rgba(124,58,237,0.90) 62%, rgba(12,5,22,1) 86%);
+  background: radial-gradient(circle at 50% 45%, var(--orb-inner), var(--orb-mid) 30%, var(--orb-outer) 62%, rgba(12,5,22,1) 86%);
   box-shadow: 0 0 60px rgba(124,58,237,0.6), 0 0 140px rgba(212,175,55,0.45), inset 0 0 90px rgba(255,255,255,0.65);
-  animation: throb 2.4s ease-in-out infinite; transition: transform 90ms ease, box-shadow 300ms ease; }
+  animation: throb 2.4s ease-in-out infinite; transition: transform 90ms ease, box-shadow 300ms ease, background 600ms ease; }
 .orb::after { content:""; position:absolute; inset:8%; border-radius:50%; pointer-events:none; background: radial-gradient(circle at 40% 30%, rgba(255,255,255,0.95), rgba(245,212,107,0.4) 40%, transparent 70%); filter: blur(2px); mix-blend-mode: screen; }
 @keyframes throb { 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.02);} }
 
 /* Particle pool items */
-.particle { position: fixed; width: 10px; height: 10px; border-radius: 50%; pointer-events:none; mix-blend-mode: screen; opacity: 0; filter: blur(0.4px) drop-shadow(0 0 10px rgba(255,255,255,0.45)); will-change: transform, opacity; }
-.particle.gold { background: radial-gradient(circle, var(--gold-soft), var(--gold)); box-shadow: 0 0 20px rgba(245,212,107,0.95); }
-.particle.purple { background: radial-gradient(circle, var(--purple-soft), var(--purple)); box-shadow: 0 0 20px rgba(168,140,246,0.95); }
+.particle { position: fixed; width: 10px; height: 10px; border-radius: 50%; pointer-events:none; mix-blend-mode: screen; opacity: 0; filter: blur(0.6px) drop-shadow(0 0 10px rgba(255,255,255,0.45)); will-change: transform, opacity; }
+.particle.gold { background: radial-gradient(circle, var(--gold-soft), var(--gold)); box-shadow: 0 0 22px rgba(245,212,107,0.95); }
+.particle.purple { background: radial-gradient(circle, var(--purple-soft), var(--purple)); box-shadow: 0 0 22px rgba(168,140,246,0.95); }
 
 /* Ambient slow embers */
 .ember { position: fixed; width: 6px; height: 6px; border-radius: 50%; background: radial-gradient(circle, var(--gold-soft), var(--gold)); mix-blend-mode: screen; opacity: 0.75; filter: drop-shadow(0 0 10px rgba(245,212,107,0.9)); pointer-events:none; animation: ember 12s linear infinite; }
@@ -118,7 +136,7 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
       <div class="boot-line" id="o3">Offline</div>
     </div>
   </div>  <!-- Watermarks -->  <div class="wm-right">Powered by Cipher Tech Systems</div>
-  <div class="wm-left">v3.1 — Cipher Tech Reactor</div>  <div class="ascend" id="ascendMsg"></div>  <script>
+  <div class="wm-left">v3.2 — Cipher Tech Reactor</div>  <div class="ascend" id="ascendMsg"></div>  <script>
   ;(() => {
     // ===== Elements =====
     const orb = document.getElementById('orb');
@@ -136,14 +154,23 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
     const pulse = document.getElementById('pulse');
     const ascendMsg = document.getElementById('ascendMsg');
 
-    // ===== Stages =====
+    // ===== Stages & palettes =====
     const STAGES = [
-      { name: 'Ember', threshold: 0 },
-      { name: 'Lumen', threshold: 100 },
-      { name: 'Resonant', threshold: 1000 },
-      { name: 'Cipher', threshold: 10000 },
-      { name: 'Ascendant', threshold: 100000 }
+      { name: 'Ember', threshold: 0, colors: { inner:'#fff6e0', mid:'#e1c25b', outer:'rgba(124,58,237,0.85)', pg:'rgba(212,175,55,0.28)', pp:'rgba(124,58,237,0.22)' } },
+      { name: 'Lumen', threshold: 100, colors: { inner:'#ffffff', mid:'#f1db87', outer:'rgba(168,120,255,0.90)', pg:'rgba(230,200,100,0.32)', pp:'rgba(150,95,255,0.26)' } },
+      { name: 'Resonant', threshold: 1000, colors:{ inner:'#dcd1ff', mid:'#c89bff', outer:'rgba(120,70,245,0.95)', pg:'rgba(190,140,255,0.30)', pp:'rgba(124,58,237,0.28)' } },
+      { name: 'Cipher', threshold: 10000, colors:{ inner:'#efe9ff', mid:'#e4c04f', outer:'rgba(135,60,255,0.98)', pg:'rgba(212,175,55,0.32)', pp:'rgba(135,60,255,0.30)' } },
+      { name: 'Ascendant', threshold: 100000, colors:{ inner:'#ffffff', mid:'#fff3b0', outer:'rgba(255,255,255,0.9)', pg:'rgba(255,230,120,0.36)', pp:'rgba(190,150,255,0.32)' } }
     ];
+
+    function applyStageColors(idx){
+      const c = STAGES[idx].colors;
+      document.documentElement.style.setProperty('--orb-inner', c.inner);
+      document.documentElement.style.setProperty('--orb-mid', c.mid);
+      document.documentElement.style.setProperty('--orb-outer', c.outer);
+      document.documentElement.style.setProperty('--pulse-gold', c.pg);
+      document.documentElement.style.setProperty('--pulse-purple', c.pp);
+    }
 
     // ===== State =====
     const state = {
@@ -168,6 +195,7 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
     function currentStageIndex(total){ let idx=0; for(let i=0;i<STAGES.length;i++){ if(total>=STAGES[i].threshold) idx=i; else break; } return idx; }
 
     let lastStageIndex = currentStageIndex(state.souls);
+    applyStageColors(lastStageIndex);
 
     function showAscend(name){
       ascendMsg.textContent = `You have ascended to ${name}.`;
@@ -181,9 +209,10 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
       const name = STAGES[idx].name;
       stageNameEl.textContent = name;
       if(idx > lastStageIndex){ // stage up
+        applyStageColors(idx);
         stageFlare();
         showAscend(name);
-        bumpBaseHum(idx);
+        playGust();
       }
       lastStageIndex = idx;
       save();
@@ -201,62 +230,52 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
     }
 
     function fireParticle(cx, cy, angle, dist, life){
-      // find an available particle
       const slot = particles.find(pt => !pt.busy) || particles[0];
-      slot.busy = true;
-      const el = slot.el;
-      const tx = cx + Math.cos(angle)*dist;
-      const ty = cy + Math.sin(angle)*dist;
-      el.style.left = cx + 'px';
-      el.style.top = cy + 'px';
-      el.style.opacity = 1;
-      const keyframes = [
+      slot.busy = true; const el = slot.el;
+      const tx = cx + Math.cos(angle)*dist; const ty = cy + Math.sin(angle)*dist;
+      el.style.left = cx + 'px'; el.style.top = cy + 'px'; el.style.opacity = 1;
+      const anim = el.animate([
         { transform:`translate(-50%,-50%) scale(1)`, opacity: 0.98 },
-        { transform:`translate(${tx-cx}px, ${ty-cy}px) scale(0.2)`, opacity: 0 }
-      ];
-      const anim = el.animate(keyframes, { duration: life, easing:'cubic-bezier(.22,.61,.36,1)', fill:'forwards' });
+        { transform:`translate(${tx-cx}px, ${ty-cy}px) scale(0.25)`, opacity: 0 }
+      ], { duration: 1400 + Math.random()*600, easing:'cubic-bezier(.22,.61,.36,1)', fill:'forwards' });
       anim.onfinish = () => { el.style.opacity = 0; slot.busy = false; };
     }
 
     function spawnBurst(cx, cy, count=36){
       for(let i=0;i<count;i++){
         const angle = Math.random()*Math.PI*2;
-        const dist = 120 + Math.random()*220; // longer reach
-        const life = 1200 + Math.random()*700; // longer-lived
-        fireParticle(cx, cy, angle, dist, life);
+        const dist = 120 + Math.random()*220;
+        fireParticle(cx, cy, angle, dist, 1600);
       }
     }
 
     function pulseWave(){
-      pulse.classList.remove('show');
-      void pulse.offsetWidth; // reflow
-      pulse.classList.add('show');
+      pulse.classList.remove('show'); void pulse.offsetWidth; pulse.classList.add('show');
       setTimeout(()=> pulse.classList.remove('show'), 900);
+    }
+
+    function rainbowWave(){
+      const w = document.createElement('div'); w.className = 'wave';
+      document.body.appendChild(w); setTimeout(()=> w.remove(), 1450);
     }
 
     // Ambient drifting embers
     function ambientDrift(){
       const ember = document.createElement('div'); ember.className='ember';
-      const sx = Math.floor(Math.random()*100); // vw
-      const dx = (Math.random()*30-15); // vw drift
-      ember.style.setProperty('--sx', sx+'vw');
-      ember.style.setProperty('--dx', dx+'vw');
-      document.body.appendChild(ember);
-      setTimeout(()=> ember.remove(), 12000);
+      const sx = Math.floor(Math.random()*100); const dx = (Math.random()*30-15);
+      ember.style.setProperty('--sx', sx+'vw'); ember.style.setProperty('--dx', dx+'vw');
+      document.body.appendChild(ember); setTimeout(()=> ember.remove(), 12000);
     }
     setInterval(ambientDrift, 1400);
 
-    // ===== Audio (Web Audio API) with persistence =====
-    let audioCtx=null, masterGain=null, reverb=null, baseHumOsc=null, baseHumGain=null, turbineNoise=null, turbineFilter=null, turbineGain=null;
-    let tapBoostTimeout=null; // cooldown for turbine
+    // ===== Audio (Web Audio API) — chimes + sparkle + gust =====
+    let audioCtx=null, masterGain=null, reverb=null, bgGain=null; // ambient bus
 
-    function makeImpulseResponse(ctx, seconds=2.2, decay=2.5){
+    function makeImpulseResponse(ctx, seconds=2.6, decay=2.8){
       const rate = ctx.sampleRate; const length = rate * seconds; const impulse = ctx.createBuffer(2, length, rate);
       for (let c=0;c<2;c++){
         const ch = impulse.getChannelData(c);
-        for (let i=0;i<length;i++){
-          ch[i] = (Math.random()*2-1) * Math.pow(1 - i/length, decay);
-        }
+        for (let i=0;i<length;i++) ch[i] = (Math.random()*2-1) * Math.pow(1 - i/length, decay);
       }
       return impulse;
     }
@@ -266,58 +285,61 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
       if(!audioCtx){
         audioCtx = new (window.AudioContext||window.webkitAudioContext)();
         masterGain = audioCtx.createGain(); masterGain.gain.value = 0.5; masterGain.connect(audioCtx.destination);
-
-        // Reverb path
-        const conv = audioCtx.createConvolver(); conv.buffer = makeImpulseResponse(audioCtx, 2.8, 2.9); reverb = audioCtx.createGain(); reverb.gain.value = 0.2; conv.connect(reverb); reverb.connect(masterGain);
-
-        // Base hum (sine)
-        baseHumOsc = audioCtx.createOscillator(); baseHumOsc.type='sine'; baseHumOsc.frequency.value = 70 + currentStageIndex(state.souls)*12; // stage-based
-        baseHumGain = audioCtx.createGain(); baseHumGain.gain.value = 0.06; baseHumOsc.connect(baseHumGain); baseHumGain.connect(conv); baseHumGain.connect(masterGain); baseHumOsc.start();
-
-        // Turbine layer (continuous noise -> filter -> gain)
-        const size = audioCtx.sampleRate; // 1 second buffer
-        const buffer = audioCtx.createBuffer(1, size, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0); for(let i=0;i<size;i++){ data[i] = Math.random()*2-1; }
-        turbineNoise = audioCtx.createBufferSource(); turbineNoise.buffer = buffer; turbineNoise.loop = true; turbineNoise.loopStart = 0; turbineNoise.loopEnd = 1;
-        turbineFilter = audioCtx.createBiquadFilter(); turbineFilter.type='lowpass'; turbineFilter.frequency.value = 900;
-        turbineGain = audioCtx.createGain(); turbineGain.gain.value = 0.06; // slightly stronger than before
-        turbineNoise.connect(turbineFilter); turbineFilter.connect(turbineGain); turbineGain.connect(conv); turbineGain.connect(masterGain); turbineNoise.start();
+        const conv = audioCtx.createConvolver(); conv.buffer = makeImpulseResponse(audioCtx, 3.0, 3.2); reverb = audioCtx.createGain(); reverb.gain.value = 0.25; conv.connect(reverb); reverb.connect(masterGain);
+        bgGain = audioCtx.createGain(); bgGain.gain.value = 0.18; bgGain.connect(reverb); bgGain.connect(masterGain);
+        startChimeAmbience();
       } else if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+    }
+
+    // Background wind-chime ambience (random gentle tones)
+    let chimeTimer = null;
+    function startChimeAmbience(){
+      if(chimeTimer) clearInterval(chimeTimer);
+      // schedule a small stack of chimes every few seconds
+      chimeTimer = setInterval(()=>{
+        if(state.sound!=='on' || !audioCtx) return;
+        const base = 440 * Math.pow(2, (Math.random()*12-6)/12); // random base around A4
+        for(let i=0;i<3;i++) setTimeout(()=>playChime(base * (i===0?1: (i===1?1.25:1.5))), i*220);
+      }, 3200);
+    }
+
+    function playChime(freq){
+      const o1 = audioCtx.createOscillator(); o1.type='sine'; o1.frequency.value=freq;
+      const o2 = audioCtx.createOscillator(); o2.type='triangle'; o2.frequency.value=freq*2;
+      const g = audioCtx.createGain(); g.gain.value = 0.0001; o1.connect(g); o2.connect(g); g.connect(reverb); g.connect(masterGain);
+      const now = audioCtx.currentTime; g.gain.exponentialRampToValueAtTime(0.18, now+0.01); g.gain.exponentialRampToValueAtTime(0.0001, now+2.4);
+      o1.start(); o2.start(); o1.stop(now+2.5); o2.stop(now+2.5);
+    }
+
+    // Tap sparkle (short tinkle)
+    function playSparkle(){ if(state.sound!=='on' || !audioCtx) return;
+      const o = audioCtx.createOscillator(); o.type='triangle'; o.frequency.value = 1600 + Math.random()*800;
+      const g = audioCtx.createGain(); g.gain.value = 0.0001; const hp = audioCtx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value = 800;
+      o.connect(hp); hp.connect(g); g.connect(reverb); g.connect(masterGain);
+      const now = audioCtx.currentTime; g.gain.exponentialRampToValueAtTime(0.22, now+0.01); g.gain.exponentialRampToValueAtTime(0.0001, now+0.25);
+      o.start(); o.stop(now+0.26);
+    }
+
+    // Level-up gust (filtered noise sweep + reverb), plus rainbow wave visual
+    function playGust(){ if(state.sound!=='on' || !audioCtx) { rainbowWave(); return; }
+      const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate*2, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0); for(let i=0;i<data.length;i++) data[i] = Math.random()*2-1;
+      const src = audioCtx.createBufferSource(); src.buffer = buffer; const bp = audioCtx.createBiquadFilter(); bp.type='bandpass'; bp.Q.value = 0.7; bp.frequency.value = 600;
+      const g = audioCtx.createGain(); g.gain.value = 0.0001; src.connect(bp); bp.connect(g); g.connect(reverb); g.connect(masterGain);
+      const now = audioCtx.currentTime; bp.frequency.linearRampToValueAtTime(1100, now+0.5); g.gain.exponentialRampToValueAtTime(0.35, now+0.05); g.gain.exponentialRampToValueAtTime(0.0001, now+1.2); src.start(); src.stop(now+1.25);
+      rainbowWave();
     }
 
     function setSound(on){ state.sound = on ? 'on' : 'off'; soundBtn.textContent = on ? '🔊 Sound On' : '🔇 Sound Off'; save(); if(on){ ensureAudio(); } else { if(audioCtx) audioCtx.suspend(); } }
 
-    function bumpBaseHum(idx){ if(baseHumOsc){ baseHumOsc.frequency.setTargetAtTime(70 + idx*12, audioCtx.currentTime, 0.4); } }
-
-    function turbineBoost(){ if(state.sound!=='on' || !audioCtx) return; // raise filter cutoff and gain briefly
-      const now = audioCtx.currentTime;
-      const targetF = Math.min(2200, turbineFilter.frequency.value + 250); // open up more
-      const targetG = Math.min(0.4, turbineGain.gain.value + 0.05);
-      turbineFilter.frequency.cancelScheduledValues(now);
-      turbineGain.gain.cancelScheduledValues(now);
-      turbineFilter.frequency.linearRampToValueAtTime(targetF, now+0.1);
-      turbineGain.gain.linearRampToValueAtTime(targetG, now+0.1);
-      // cooldown after 1.2s without taps
-      if(tapBoostTimeout) clearTimeout(tapBoostTimeout);
-      tapBoostTimeout = setTimeout(()=>{
-        const n = audioCtx.currentTime;
-        turbineFilter.frequency.linearRampToValueAtTime(900, n+0.8);
-        turbineGain.gain.linearRampToValueAtTime(0.06, n+0.8);
-      }, 1200);
-    }
-
-    // Heartbeat to keep audio alive after tab sleep or OS power save
-    setInterval(()=>{
-      if(state.sound==='on' && audioCtx && audioCtx.state==='suspended'){
-        audioCtx.resume();
-      }
-    }, 10000);
+    // Keep audio alive after tab sleep
+    setInterval(()=>{ if(state.sound==='on' && audioCtx && audioCtx.state==='suspended'){ audioCtx.resume(); } }, 10000);
 
     // ===== Interactions =====
     function onTap(ev){ ensureAudio(); state.souls += state.perTap*state.mult; updateUI();
       const x = (ev.clientX|| (ev.touches&&ev.touches[0].clientX) || (window.innerWidth/2));
       const y = (ev.clientY|| (ev.touches&&ev.touches[0].clientY) || (window.innerHeight/2));
-      spawnBurst(x,y,38); pulseWave(); orb.style.transform='scale(0.985)'; setTimeout(()=> orb.style.transform='scale(1)', 90); turbineBoost(); }
+      spawnBurst(x,y,38); pulseWave(); orb.style.transform='scale(0.985)'; setTimeout(()=> orb.style.transform='scale(1)', 90); playSparkle(); }
 
     orb.addEventListener('click', onTap);
     orb.addEventListener('touchstart', (e)=>{ onTap(e.touches[0]); }, {passive:true});
@@ -333,16 +355,11 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
     ['mouseup','mouseleave','touchend','touchcancel'].forEach(evt => resetBtn.addEventListener(evt,()=>{ holding=false; clearTimeout(holdTimer); }));
 
     function powerDownAndReset(){
-      // Show OFF overlay
       offText.style.display='block'; bootText.style.display='none'; overlay.classList.remove('hidden');
-      // animate OFF lines
       ['o1','o2','o3'].forEach((id,i)=>{ setTimeout(()=> document.getElementById(id).classList.add('show'), 120*i); });
-      // lower audio
-      if(audioCtx){ const now = audioCtx.currentTime; if(baseHumGain) baseHumGain.gain.linearRampToValueAtTime(0.0001, now+0.6); if(turbineGain) turbineGain.gain.linearRampToValueAtTime(0.0001, now+0.6); }
       setTimeout(()=>{
         state.souls=0; state.perTap=1; state.auto=0; state.mult=1; save(); updateUI();
-        // hide overlay again
-        setTimeout(()=>{ overlay.classList.add('hidden'); offText.style.display='none'; bootText.style.display='block'; ['o1','o2','o3'].forEach(id=> document.getElementById(id).classList.remove('show')); if(baseHumGain){ baseHumGain.gain.value=0.06; } if(turbineGain){ turbineGain.gain.value=0.06; } }, 700);
+        setTimeout(()=>{ overlay.classList.add('hidden'); offText.style.display='none'; bootText.style.display='block'; ['o1','o2','o3'].forEach(id=> document.getElementById(id).classList.remove('show')); }, 700);
       }, 1200);
     }
 
@@ -355,7 +372,7 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
         if(up==='tap') { state.perTap += 1; msg.textContent='Soul Amplifier acquired!'; }
         if(up==='auto'){ state.auto += 1; msg.textContent='Aura Booster active!'; }
         if(up==='mult'){ state.mult = +(state.mult + 0.1).toFixed(2); msg.textContent='Quantum Surge!'; }
-        updateUI(); turbineBoost();
+        updateUI();
       };
     });
 
@@ -365,10 +382,10 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
     // Sound control
     soundBtn.onclick = () => setSound(state.sound !== 'on');
 
-    // Stage flare (visual emphasis on ascension)
+    // Stage flare visuals
     function stageFlare(){
-      pulseWave();
-      orb.style.boxShadow = '0 0 80px rgba(124,58,237,0.8), 0 0 180px rgba(212,175,55,0.6), inset 0 0 110px rgba(255,255,255,0.8)';
+      pulseWave(); rainbowWave();
+      orb.style.boxShadow = '0 0 90px rgba(124,58,237,0.85), 0 0 200px rgba(212,175,55,0.65), inset 0 0 120px rgba(255,255,255,0.9)';
       setTimeout(()=>{
         orb.style.boxShadow = '0 0 60px rgba(124,58,237,0.6), 0 0 140px rgba(212,175,55,0.45), inset 0 0 90px rgba(255,255,255,0.65)';
       }, 1200);
@@ -380,10 +397,10 @@ header { display:flex; align-items:center; justify-content:center; gap:14px; pad
 
     // Boot sequence (once only)
     function runBoot(){
-      if(state.booted){ overlay.classList.add('hidden'); return; }
+      if(state.booted){ overlay.classList.add('hidden'); ensureAudio(); return; }
       const seq = ['b1','b2','b3'];
       seq.forEach((id,i)=> setTimeout(()=> document.getElementById(id).classList.add('show'), 320*i));
-      setTimeout(()=>{ overlay.classList.add('hidden'); state.booted = true; save(); }, 1600);
+      setTimeout(()=>{ overlay.classList.add('hidden'); state.booted = true; save(); ensureAudio(); }, 1600);
     }
     runBoot();
   })();

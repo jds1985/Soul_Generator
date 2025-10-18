@@ -1,138 +1,214 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Soul Reactor v3.4 – Vault of Life (A–C Test Build)</title>
-<style>
-html,body{margin:0;padding:0;background:radial-gradient(circle at 50% 25%,#4b0076 0%,#0b0014 100%);
-font-family:"Orbitron",sans-serif;color:#fff;overflow:hidden;height:100%;user-select:none;}
-header{position:absolute;top:10px;width:100%;text-align:center;font-size:1.3em;font-weight:700;
-text-shadow:0 0 12px gold;}
-footer{position:absolute;bottom:8px;width:100%;text-align:center;font-size:.7em;opacity:.7;}
-#orb{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:150px;height:150px;
-border-radius:50%;background:radial-gradient(circle,#f9d26a 0%,#a12eff 70%);
-box-shadow:0 0 40px 10px rgba(255,215,0,.4);animation:pulse 3s ease-in-out infinite;}
-@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.05);}}
-#xpBarContainer{position:absolute;top:70px;left:50%;transform:translateX(-50%);width:80%;height:30px;
-border-radius:20px;background:rgba(255,255,255,.1);overflow:hidden;}
-#xpBar{height:100%;width:0%;background:linear-gradient(90deg,red,orange,yellow,green,blue,indigo,violet);
-animation:rainbow 10s linear infinite;background-size:400% 100%;}
-@keyframes rainbow{0%{background-position:0 0;}100%{background-position:400% 0;}}
-#xpText{position:absolute;width:100%;text-align:center;line-height:30px;font-size:.9em;z-index:2;}
-button{cursor:pointer;border:none;border-radius:12px;padding:10px 20px;font-weight:700;
-background:linear-gradient(45deg,#5e00a8,#d9a406);color:white;text-shadow:0 0 6px #000;
-box-shadow:0 0 10px rgba(0,0,0,.5);}
-#shopBtn,#vaultBtn,#forceLevel{position:absolute;bottom:80px;}
-#shopBtn{left:20px;}#vaultBtn{left:140px;}
-#forceLevel{right:20px;background:#008cff;}
-#vaultPanel{position:absolute;bottom:-100%;left:0;width:100%;height:60%;background:radial-gradient(circle at 50% 0%,#ffd86d 0%,#6a00ff 100%);
-box-shadow:0 -5px 30px gold;transition:bottom .6s ease-in-out;padding:20px;overflow-y:auto;}
-#vaultPanel.active{bottom:0;}
-.card{display:inline-block;width:100px;height:140px;margin:10px;border-radius:12px;text-align:center;
-font-size:.8em;box-shadow:0 0 10px rgba(255,255,255,.5);}
-.locked{background:#333;color:#666;}
-.unlocked{background:linear-gradient(180deg,#ffe877,#c37bff);color:#111;box-shadow:0 0 20px #fff;}
-.quote{font-style:italic;font-size:.7em;opacity:.9;}
-#creatureReveal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-width:200px;height:200px;border-radius:20px;text-align:center;background:rgba(255,255,255,.1);
-backdrop-filter:blur(6px);display:none;flex-direction:column;justify-content:center;align-items:center;
-box-shadow:0 0 20px gold;}
-#creatureReveal.active{display:flex;animation:reveal .8s ease-out;}
-@keyframes reveal{0%{opacity:0;transform:translate(-50%,-60%) scale(.8);}
-100%{opacity:1;transform:translate(-50%,-50%) scale(1);}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Soul Reactor v3.5 — Awakening (Vault of Life A–C)</title>
+  <meta name="description" content="Soul Reactor — tap to generate souls. Cinematic particles, wind-chime ambience, sparkle taps, gust ascensions, rainbow XP, evolving orb, and Vault of Life (A–C)." />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-0:#0b0613;--bg-1:#120a21;--text:#f7f6ff;
+      --purple:#7c3aed;--purple-soft:#a88cf7;--gold:#d4af37;--gold-soft:#f5d46b;
+      --orb-inner:#fff6e0;--orb-mid:#e1c25b;--orb-outer:rgba(124,58,237,.9);
+      --pulse-gold:rgba(212,175,55,.32);--pulse-purple:rgba(124,58,237,.26);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;color:var(--text);background:radial-gradient(1200px 1200px at 50% 40%, rgba(124,58,237,.10), transparent 60%),radial-gradient(900px 900px at 20% 80%, rgba(212,175,55,.08), transparent 55%),linear-gradient(180deg, var(--bg-1), var(--bg-0));font-family:Orbitron, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial}
+    header{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px;flex-wrap:wrap}
+    .pill{border:1px solid rgba(212,175,55,.35);background:rgba(124,58,237,.18);padding:8px 12px;border-radius:999px;font-weight:700}
+    .btn{background:linear-gradient(90deg,var(--gold),var(--purple));border:none;padding:10px 16px;border-radius:12px;color:#fff;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.4);font-size:14px;font-weight:700}
+    .btn.out{background:transparent;border:1px solid var(--gold);color:var(--gold);box-shadow:none}/* XP bar */
+.xp-wrap{width:min(92vw,980px);margin:6px auto 0;padding:0 8px}
+.xp{position:relative;height:30px;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.15);background:rgba(20,12,36,.55);box-shadow:0 0 20px rgba(124,58,237,.25) inset,0 0 16px rgba(212,175,55,.18);animation:pulse 2.4s ease-in-out infinite}
+.xp::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#ff0080,#ff8c00,#ffe600,#21d07a,#00b3ff,#7c3aed,#ff0080);background-size:400% 100%;filter:blur(6px);opacity:.65;animation:rainbow 10s linear infinite}
+.xp-fill{position:absolute;top:0;left:0;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,rgba(212,175,55,.9),rgba(124,58,237,.95));box-shadow:0 0 18px rgba(212,175,55,.45),0 0 24px rgba(124,58,237,.35);transition:width 420ms ease}
+.xp-text{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;letter-spacing:.5px;text-shadow:0 0 8px rgba(255,255,255,.5)}
+@keyframes rainbow{0%{background-position:0% 50%}100%{background-position:400% 50%}}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(124,58,237,.25) inset,0 0 16px rgba(212,175,55,.18)}50%{box-shadow:0 0 30px rgba(124,58,237,.35) inset,0 0 28px rgba(212,175,55,.28)}}
+
+.arena{position:relative;width:100%;height:calc(100vh - 254px);display:grid;place-items:center}
+.pulse{position:absolute;inset:0;pointer-events:none;opacity:0;transform:scale(.9);background:radial-gradient(circle at 50% 50%,var(--pulse-gold),var(--pulse-purple) 35%,transparent 72%);filter:blur(22px);transition:opacity 650ms ease,transform 900ms ease}
+.pulse.show{opacity:.85;transform:scale(1.25)}
+
+.wave{position:absolute;left:50%;top:50%;width:30vmax;height:30vmax;transform:translate(-50%,-50%) scale(.6);border-radius:50%;pointer-events:none;opacity:.9;background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.6), rgba(255,255,255,.12) 35%, transparent 70%);mix-blend-mode:screen;filter:hue-rotate(0deg) blur(10px);animation:waveOut 1400ms ease-out forwards}
+@keyframes waveOut{0%{transform:translate(-50%,-50%) scale(.6);opacity:.9;filter:hue-rotate(0deg) blur(10px)}100%{transform:translate(-50%,-50%) scale(2.1);opacity:0;filter:hue-rotate(180deg) blur(20px)}}
+
+.orb{width:min(42vh,60vw);height:min(42vh,60vw);max-width:380px;max-height:380px;border-radius:50%;cursor:pointer;position:relative;isolation:isolate;background:radial-gradient(circle at 50% 45%,var(--orb-inner),var(--orb-mid) 30%,var(--orb-outer) 62%, rgba(12,5,22,1) 86%);box-shadow:0 0 60px rgba(124,58,237,.6),0 0 140px rgba(212,175,55,.45),inset 0 0 90px rgba(255,255,255,.65);animation:throb 2.4s ease-in-out infinite;transition:transform 90ms ease,box-shadow 300ms ease,background 600ms ease}
+.orb::after{content:"";position:absolute;inset:8%;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 40% 30%,rgba(255,255,255,.95),rgba(245,212,107,.4) 40%,transparent 70%);filter:blur(2px);mix-blend-mode:screen}
+@keyframes throb{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+
+.particle{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;mix-blend-mode:screen;opacity:0;filter:blur(.6px) drop-shadow(0 0 10px rgba(255,255,255,.45));will-change:transform,opacity}
+.particle.gold{background:radial-gradient(circle,var(--gold-soft),var(--gold));box-shadow:0 0 22px rgba(245,212,107,.95)}
+.particle.purple{background:radial-gradient(circle,var(--purple-soft),var(--purple));box-shadow:0 0 22px rgba(168,140,246,.95)}
+
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding-bottom:10px}
+
+/* Vault (slide-up bright) */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.modal-bg.active{opacity:1;pointer-events:all}
+.vault{width:100%;max-width:520px;background:radial-gradient(1000px 800px at 50% 0%, rgba(255,216,109,.6), rgba(106,0,255,.7));border-radius:20px 20px 0 0;border-top:2px solid var(--gold);box-shadow:0 -6px 40px rgba(124,58,237,.45);transform:translateY(100%);transition:transform .35s ease;padding:18px}
+.modal-bg.active .vault{transform:translateY(0)}
+.vault h2{color:#fff;text-align:center;margin:6px 0 8px;text-shadow:0 0 10px rgba(255,255,255,.6)}
+.vault-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{height:130px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;box-shadow:0 0 10px rgba(255,255,255,.5)}
+.card.lock{background:#2a2141;color:#6c5c93}
+.card.on{background:linear-gradient(180deg,#ffe877,#c37bff);color:#1a1034;text-shadow:0 0 6px rgba(255,255,255,.6)}
+
+/* Creature reveal overlay */
+.reveal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9);width:min(85vw,380px);border-radius:16px;padding:14px;background:rgba(255,255,255,.08);backdrop-filter:blur(6px);box-shadow:0 0 22px rgba(255,255,255,.35),0 0 40px rgba(212,175,55,.35);opacity:0;pointer-events:none}
+.reveal.show{opacity:1;pointer-events:all;animation:pop .5s ease-out forwards}
+@keyframes pop{0%{transform:translate(-50%,-52%) scale(.88)}100%{transform:translate(-50%,-50%) scale(1)}}
+.reveal .name{font-weight:800;text-align:center;margin:4px 0}
+.reveal .type{font-size:12px;opacity:.9;text-align:center}
+.reveal .q{font-style:italic;font-size:12px;text-align:center;margin-top:6px}
+
+.wm-left{position:fixed;left:10px;bottom:10px;font-size:11px;opacity:.6;color:#cdb7ff}
+
+  </style>
 </head>
 <body>
+  <header>
+    <div class="pill">Souls: <span id="souls">0</span></div>
+    <div class="pill">Stage: <span id="stage">Ember</span></div>
+    <button id="soundBtn" class="btn out">🔇 Sound Off</button>
+  </header>  <!-- XP BAR -->  <div class="xp-wrap">
+    <div class="xp" id="xpBar">
+      <div class="xp-fill" id="xpFill"></div>
+      <div class="xp-text" id="xpText">XP: 0 / 100</div>
+    </div>
+  </div>  <main class="arena">
+    <div class="pulse" id="pulse"></div>
+    <div class="orb" id="orb" role="button" aria-label="Generate soul energy"></div>
+  </main>  <div class="controls">
+    <button class="btn" id="openVault">🧬 Creatures</button>
+    <button class="btn out" id="force">⚡ Force Level-Up</button>
+  </div>  <!-- Vault slide-up -->  <div class="modal-bg" id="vaultModal">
+    <div class="vault">
+      <h2>🧬 Vault of Life</h2>
+      <div class="vault-grid" id="vaultGrid"></div>
+      <button class="btn out" id="closeVault" style="margin-top:10px;width:100%">Close</button>
+    </div>
+  </div>  <!-- Creature reveal overlay -->  <div class="reveal" id="reveal">
+    <div class="name" id="rName"></div>
+    <div class="type" id="rType"></div>
+    <div class="q" id="rQuote"></div>
+  </div>  <div class="wm-left">v3.5 — Soul Reactor • Awakening</div><script>
+(() => {
+  // Elements
+  const orb = document.getElementById('orb');
+  const soulsEl = document.getElementById('souls');
+  const stageEl = document.getElementById('stage');
+  const xpFill = document.getElementById('xpFill');
+  const xpText = document.getElementById('xpText');
+  const pulse = document.getElementById('pulse');
+  const openVault = document.getElementById('openVault');
+  const vaultModal = document.getElementById('vaultModal');
+  const closeVault = document.getElementById('closeVault');
+  const grid = document.getElementById('vaultGrid');
+  const forceBtn = document.getElementById('force');
+  const soundBtn = document.getElementById('soundBtn');
+  const r = { box: document.getElementById('reveal'), name: document.getElementById('rName'), type: document.getElementById('rType'), quote: document.getElementById('rQuote') };
 
-<header>⚛️ Soul Reactor – Vault of Life</header>
+  // Stages
+  const STAGES = [
+    { name:'Ember', threshold:0, colors:{ inner:'#fff6e0', mid:'#e1c25b', outer:'rgba(124,58,237,.85)', pg:'rgba(212,175,55,.28)', pp:'rgba(124,58,237,.22)' } },
+    { name:'Lumen', threshold:100, colors:{ inner:'#ffffff', mid:'#f1db87', outer:'rgba(168,120,255,.9)', pg:'rgba(230,200,100,.32)', pp:'rgba(150,95,255,.26)' } },
+    { name:'Resonant', threshold:1000, colors:{ inner:'#dcd1ff', mid:'#c89bff', outer:'rgba(120,70,245,.95)', pg:'rgba(190,140,255,.30)', pp:'rgba(124,58,237,.28)' } },
+    { name:'Cipher', threshold:10000, colors:{ inner:'#efe9ff', mid:'#e4c04f', outer:'rgba(135,60,255,.98)', pg:'rgba(212,175,55,.32)', pp:'rgba(135,60,255,.30)' } },
+    { name:'Ascendant', threshold:100000, colors:{ inner:'#ffffff', mid:'#fff3b0', outer:'rgba(255,255,255,.9)', pg:'rgba(255,230,120,.36)', pp:'rgba(190,150,255,.32)' } },
+  ];
 
-<div id="xpBarContainer">
-  <div id="xpBar"></div>
-  <div id="xpText">XP 0 / 100</div>
-</div>
+  const CREATURES = [
+    { id:'A', name:'Ameego', type:'Ameba', quote:'I absorb all criticism!' },
+    { id:'B', name:'Bubo', type:'Beetle', quote:'Error 404: Chill not found.' },
+    { id:'C', name:'Crumbly', type:'Crustacean', quote:"Don't touch my house — it’s half dessert!" },
+  ];
 
-<div id="orb"></div>
+  // State
+  const state = {
+    souls: +(localStorage.getItem('souls')||0), perTap: +(localStorage.getItem('perTap')||1), mult: +(localStorage.getItem('mult')||1),
+    auto: +(localStorage.getItem('auto')||0), sound: (localStorage.getItem('sound')||'off'),
+    unlocked: JSON.parse(localStorage.getItem('vaultUnlocks')||'[]'),
+  };
 
-<button id="shopBtn">🛒 Shop</button>
-<button id="vaultBtn">🧬 Creatures</button>
-<button id="forceLevel">⚡ Force Level-Up</button>
+  function save(){
+    localStorage.setItem('souls', state.souls);
+    localStorage.setItem('perTap', state.perTap);
+    localStorage.setItem('mult', state.mult);
+    localStorage.setItem('auto', state.auto);
+    localStorage.setItem('sound', state.sound);
+    localStorage.setItem('vaultUnlocks', JSON.stringify(state.unlocked));
+  }
 
-<div id="vaultPanel">
-  <h3>🧬 Vault of Life</h3>
-  <div id="vaultGrid"></div>
-</div>
+  function fmt(n){ if(n>=1e9) return (n/1e9).toFixed(2)+'B'; if(n>=1e6) return (n/1e6).toFixed(2)+'M'; if(n>=1e3) return (n/1e3).toFixed(1)+'K'; return Math.floor(n).toString(); }
+  function stageIndex(total){ let idx=0; for(let i=0;i<STAGES.length;i++){ if(total>=STAGES[i].threshold) idx=i; else break; } return idx; }
+  function nextThreshold(idx){ return idx>=STAGES.length-1 ? null : STAGES[idx+1].threshold; }
 
-<div id="creatureReveal">
-  <h2 id="creatureName"></h2>
-  <p id="creatureType"></p>
-  <p class="quote" id="creatureQuote"></p>
-</div>
+  let lastStage = stageIndex(state.souls);
+  applyStageColors(lastStage);
 
-<footer>v3.4 – Soul Reactor: Vault of Life (A–C Test Build)</footer>
+  function applyStageColors(idx){
+    const c = STAGES[idx].colors; const root = document.documentElement.style;
+    root.setProperty('--orb-inner', c.inner); root.setProperty('--orb-mid', c.mid); root.setProperty('--orb-outer', c.outer); root.setProperty('--pulse-gold', c.pg); root.setProperty('--pulse-purple', c.pp);
+  }
 
-<script>
-const CREATURES=[
- {id:'A',name:'Ameego',type:'Ameba',quote:'I absorb all criticism!'},
- {id:'B',name:'Bubo',type:'Beetle',quote:'Error 404: Chill not found.'},
- {id:'C',name:'Crumbly',type:'Crustacean',quote:'Don’t touch my house — it’s half dessert!'}
-];
-let xp=0;let level=1;let nextXP=100;
-let unlocked=JSON.parse(localStorage.getItem("vaultUnlocks")||"[]");
+  function updateXP(){
+    const idx = stageIndex(state.souls);
+    const next = nextThreshold(idx);
+    if(next===null){ xpFill.style.width='100%'; xpText.textContent='XP: MAX'; return; }
+    const base = STAGES[idx].threshold; const p = Math.max(0, Math.min(1, (state.souls-base)/(next-base)));
+    xpFill.style.width = (p*100).toFixed(1)+'%';
+    xpText.textContent = `XP: ${fmt(state.souls)} / ${fmt(next)}`;
+  }
 
-const xpBar=document.getElementById("xpBar");
-const xpText=document.getElementById("xpText");
-const vaultGrid=document.getElementById("vaultGrid");
-const vaultPanel=document.getElementById("vaultPanel");
-const reveal=document.getElementById("creatureReveal");
-const orb=document.getElementById("orb");
+  function pulseWave(){ pulse.classList.remove('show'); void pulse.offsetWidth; pulse.classList.add('show'); setTimeout(()=>pulse.classList.remove('show'),900); }
+  function rainbowWave(){ const w=document.createElement('div'); w.className='wave'; document.body.appendChild(w); setTimeout(()=>w.remove(),1450); }
 
-function updateXP(){
-  xp+=10;
-  if(xp>=nextXP){levelUp();}
-  const pct=Math.min(xp/nextXP*100,100);
-  xpBar.style.width=pct+"%";
-  xpText.textContent=`XP ${xp} / ${nextXP}`;
-}
+  // Particles (pooled)
+  const particles=[]; for(let i=0;i<80;i++){ const p=document.createElement('div'); p.className='particle '+(i%2?'gold':'purple'); p.style.opacity=0; p.style.transform='translate(-50%,-50%) scale(.4)'; document.body.appendChild(p); particles.push({el:p,busy:false}); }
+  function fireParticle(cx,cy,a,d){ const slot=particles.find(pt=>!pt.busy)||particles[0]; slot.busy=true; const el=slot.el; const tx=cx+Math.cos(a)*d; const ty=cy+Math.sin(a)*d; el.style.left=cx+'px'; el.style.top=cy+'px'; el.style.opacity=1; const anim=el.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:.98},{transform:`translate(${tx-cx}px,${ty-cy}px) scale(.25)`,opacity:0}],{duration:1400+Math.random()*600,easing:'cubic-bezier(.22,.61,.36,1)',fill:'forwards'}); anim.onfinish=()=>{el.style.opacity=0; slot.busy=false}; }
+  function burst(x,y){ for(let i=0;i<36;i++){ fireParticle(x,y,Math.random()*Math.PI*2,120+Math.random()*220); } }
 
-function levelUp(){
-  xp=0;level++;
-  showCreature();
-  localStorage.setItem("vaultUnlocks",JSON.stringify(unlocked));
-}
+  function updateUI(){ soulsEl.textContent = fmt(state.souls); const idx=stageIndex(state.souls); const name=STAGES[idx].name; stageEl.textContent=name; updateXP(); if(idx>lastStage){ applyStageColors(idx); stageFlare(); playGust(); revealCreature(idx); lastStage=idx; } save(); }
 
-function showCreature(){
-  const idx=(level-2)%CREATURES.length;
-  const c=CREATURES[idx];
-  if(!unlocked.includes(c.id))unlocked.push(c.id);
-  reveal.classList.add("active");
-  document.getElementById("creatureName").textContent=c.name;
-  document.getElementById("creatureType").textContent=`${c.type} Type`;
-  document.getElementById("creatureQuote").textContent=`“${c.quote}”`;
-  setTimeout(()=>{reveal.classList.remove("active");renderVault();},3000);
-}
+  function stageFlare(){ pulseWave(); rainbowWave(); orb.style.boxShadow='0 0 90px rgba(124,58,237,.85),0 0 200px rgba(212,175,55,.65),inset 0 0 120px rgba(255,255,255,.9)'; setTimeout(()=>{ orb.style.boxShadow='0 0 60px rgba(124,58,237,.6),0 0 140px rgba(212,175,55,.45),inset 0 0 90px rgba(255,255,255,.65)'; },1200); }
 
-function renderVault(){
-  vaultGrid.innerHTML="";
-  CREATURES.forEach(c=>{
-    const card=document.createElement("div");
-    card.classList.add("card");
-    if(unlocked.includes(c.id)){
-      card.classList.add("unlocked");
-      card.innerHTML=`<b>${c.name}</b><br>${c.type}<br><span class='quote'>${c.quote}</span>`;
-    }else{
-      card.classList.add("locked");
-      card.textContent=c.id;
-    }
-    vaultGrid.appendChild(card);
-  });
-}
+  // ===== Audio via WebAudio (embedded synthesis) =====
+  let ctx=null, master=null, reverb=null, bgTimer=null; function makeIR(seconds=3,decay=3.2){ const rate=ctx.sampleRate; const len=rate*seconds; const imp=ctx.createBuffer(2,len,rate); for(let c=0;c<2;c++){ const ch=imp.getChannelData(c); for(let i=0;i<len;i++){ ch[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay); } } return imp; }
+  function ensureAudio(){ if(state.sound!=='on') return; if(!ctx){ ctx=new (window.AudioContext||window.webkitAudioContext)(); master=ctx.createGain(); master.gain.value=.5; master.connect(ctx.destination); const conv=ctx.createConvolver(); conv.buffer=makeIR(); reverb=ctx.createGain(); reverb.gain.value=.25; conv.connect(reverb); reverb.connect(master); startChimes(); } else if(ctx.state==='suspended'){ ctx.resume(); } }
+  function startChimes(){ if(bgTimer) clearInterval(bgTimer); bgTimer=setInterval(()=>{ if(state.sound!=='on'||!ctx) return; const base=440*Math.pow(2,(Math.random()*12-6)/12); for(let i=0;i<3;i++) setTimeout(()=>playChime(base*(i===0?1:(i===1?1.25:1.5))),i*220); },3200); }
+  function playChime(f){ const o1=ctx.createOscillator();o1.type='sine';o1.frequency.value=f; const o2=ctx.createOscillator();o2.type='triangle';o2.frequency.value=f*2; const g=ctx.createGain(); g.gain.value=0.0001; o1.connect(g);o2.connect(g); g.connect(reverb);g.connect(master); const t=ctx.currentTime; g.gain.exponentialRampToValueAtTime(.18,t+.01); g.gain.exponentialRampToValueAtTime(0.0001,t+2.4); o1.start();o2.start(); o1.stop(t+2.5);o2.stop(t+2.5); }
+  function playSparkle(){ if(state.sound!=='on'||!ctx) return; const o=ctx.createOscillator();o.type='triangle';o.frequency.value=1600+Math.random()*800; const g=ctx.createGain();g.gain.value=0.0001; const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=800; o.connect(hp); hp.connect(g); g.connect(reverb);g.connect(master); const t=ctx.currentTime; g.gain.exponentialRampToValueAtTime(.22,t+.01); g.gain.exponentialRampToValueAtTime(0.0001,t+.25); o.start(); o.stop(t+.26); }
+  function playGust(){ if(state.sound!=='on'||!ctx){ rainbowWave(); return; } const buf=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate); const data=buf.getChannelData(0); for(let i=0;i<data.length;i++) data[i]=Math.random()*2-1; const src=ctx.createBufferSource(); src.buffer=buf; const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=.7; bp.frequency.value=600; const g=ctx.createGain(); g.gain.value=0.0001; src.connect(bp); bp.connect(g); g.connect(reverb); g.connect(master); const t=ctx.currentTime; bp.frequency.linearRampToValueAtTime(1100,t+.5); g.gain.exponentialRampToValueAtTime(.35,t+.05); g.gain.exponentialRampToValueAtTime(0.0001,t+1.2); src.start(); src.stop(t+1.25); rainbowWave(); }
+  setInterval(()=>{ if(state.sound==='on'&&ctx&&ctx.state==='suspended') ctx.resume(); },10000);
+  function setSound(on){ state.sound = on?'on':'off'; soundBtn.textContent = on?'🔊 Sound On':'🔇 Sound Off'; save(); if(on){ ensureAudio(); } else { if(ctx) ctx.suspend(); } }
 
-document.getElementById("vaultBtn").onclick=()=>vaultPanel.classList.toggle("active");
-document.getElementById("forceLevel").onclick=()=>levelUp();
-orb.onclick=updateXP;
-renderVault();
-</script>
+  // Interactions
+  function tap(e){ if(state.sound==='on') ensureAudio(); const x=(e.clientX||(e.touches&&e.touches[0].clientX)||window.innerWidth/2); const y=(e.clientY||(e.touches&&e.touches[0].clientY)||window.innerHeight/2); burst(x,y); pulseWave(); orb.style.transform='scale(.985)'; setTimeout(()=>orb.style.transform='scale(1)',90); state.souls += state.perTap*state.mult; playSparkle(); updateUI(); }
+  orb.addEventListener('click',tap); orb.addEventListener('touchstart',ev=>tap(ev.touches[0]),{passive:true});
 
-</body>
+  // Vault
+  function renderVault(){ grid.innerHTML=''; CREATURES.forEach(c=>{ const d=document.createElement('div'); d.className='card '+(state.unlocked.includes(c.id)?'on':'lock'); d.innerHTML = state.unlocked.includes(c.id)?`<div><b>${c.name}</b><div style="font-size:12px">${c.type}</div><div style="font-size:11px;opacity:.8">“${c.quote}”</div></div>`:`<div style="font-size:34px;opacity:.7">${c.id}</div>`; grid.appendChild(d); }); }
+  openVault.onclick=()=>{ vaultModal.classList.add('active'); renderVault(); if(state.sound==='on') ensureAudio(); };
+  closeVault.onclick=()=>vaultModal.classList.remove('active');
+
+  // Reveal creature at level-up
+  function revealCreature(idx){ const n = Math.min(idx, CREATURES.length); const c = CREATURES[n-1]; if(!c) return; if(!state.unlocked.includes(c.id)) state.unlocked.push(c.id); save(); r.name.textContent = `${c.name}`; r.type.textContent = `${c.type} Type`; r.quote.textContent = `“${c.quote}”`; r.box.classList.add('show'); setTimeout(()=>{ r.box.classList.remove('show'); renderVault(); }, 2500); }
+
+  // Force level-up (debug)
+  forceBtn.onclick=()=>{ state.souls = STAGES[Math.min(stageIndex(state.souls)+1, STAGES.length-1)].threshold; updateUI(); };
+
+  // Sound toggle
+  soundBtn.onclick=()=> setSound(state.sound!=='on');
+
+  // Auto generation (if any)
+  setInterval(()=>{ if(state.auto>0){ state.souls += state.auto*state.mult; updateUI(); } }, 1000);
+
+  // Initial draw
+  updateUI(); setSound(state.sound==='on');
+  // Start audio only after first interaction for mobile policy; also resume if already on
+  ['click','touchstart'].forEach(evt=>document.addEventListener(evt,()=>ensureAudio(),{once:true,passive:true}));
+})();
+</script></body>
 </html>

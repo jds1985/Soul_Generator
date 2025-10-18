@@ -1,276 +1,149 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Soul Reactor v3.6 — Vault & Store Reunited</title>
-  <meta name="description" content="Soul Reactor — tap to generate souls. Cinematic particles, wind-chime ambience, sparkle taps, gust ascensions, rainbow XP, evolving orb, Vault of Life (A–C) and re-added Store panel." />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg-0:#0b0613;--bg-1:#120a21;--text:#f7f6ff;
-      --purple:#7c3aed;--purple-soft:#a88cf7;--gold:#d4af37;--gold-soft:#f5d46b;
-      --orb-inner:#fff6e0;--orb-mid:#e1c25b;--orb-outer:rgba(124,58,237,.9);
-      --pulse-gold:rgba(212,175,55,.32);--pulse-purple:rgba(124,58,237,.26);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;color:var(--text);background:radial-gradient(1200px 1200px at 50% 40%, rgba(124,58,237,.10), transparent 60%),radial-gradient(900px 900px at 20% 80%, rgba(212,175,55,.08), transparent 55%),linear-gradient(180deg, var(--bg-1), var(--bg-0));font-family:Orbitron, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial}
-    header{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px;flex-wrap:wrap}
-    .pill{border:1px solid rgba(212,175,55,.35);background:rgba(124,58,237,.18);padding:8px 12px;border-radius:999px;font-weight:700}
-    .btn{background:linear-gradient(90deg,var(--gold),var(--purple));border:none;padding:10px 16px;border-radius:12px;color:#fff;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.4);font-size:14px;font-weight:700}
-    .btn.out{background:transparent;border:1px solid var(--gold);color:var(--gold);box-shadow:none}/* XP bar */
-.xp-wrap{width:min(92vw,980px);margin:6px auto 0;padding:0 8px}
-.xp{position:relative;height:30px;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.15);background:rgba(20,12,36,.55);box-shadow:0 0 20px rgba(124,58,237,.25) inset,0 0 16px rgba(212,175,55,.18);animation:pulse 2.4s ease-in-out infinite}
-.xp::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#ff0080,#ff8c00,#ffe600,#21d07a,#00b3ff,#7c3aed,#ff0080);background-size:400% 100%;filter:blur(6px);opacity:.65;animation:rainbow 10s linear infinite}
-.xp-fill{position:absolute;top:0;left:0;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,rgba(212,175,55,.9),rgba(124,58,237,.95));box-shadow:0 0 18px rgba(212,175,55,.45),0 0 24px rgba(124,58,237,.35);transition:width 420ms ease}
-.xp-text{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;letter-spacing:.5px;text-shadow:0 0 8px rgba(255,255,255,.5)}
-@keyframes rainbow{0%{background-position:0% 50%}100%{background-position:400% 50%}}
-@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(124,58,237,.25) inset,0 0 16px rgba(212,175,55,.18)}50%{box-shadow:0 0 30px rgba(124,58,237,.35) inset,0 0 28px rgba(212,175,55,.28)}}
-
-.arena{position:relative;width:100%;height:calc(100vh - 294px);display:grid;place-items:center}
-.pulse{position:absolute;inset:0;pointer-events:none;opacity:0;transform:scale(.9);background:radial-gradient(circle at 50% 50%,var(--pulse-gold),var(--pulse-purple) 35%,transparent 72%);filter:blur(22px);transition:opacity 650ms ease,transform 900ms ease}
-.pulse.show{opacity:.85;transform:scale(1.25)}
-
-.wave{position:absolute;left:50%;top:50%;width:30vmax;height:30vmax;transform:translate(-50%,-50%) scale(.6);border-radius:50%;pointer-events:none;opacity:.9;background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.6), rgba(255,255,255,.12) 35%, transparent 70%);mix-blend-mode:screen;filter:hue-rotate(0deg) blur(10px);animation:waveOut 1400ms ease-out forwards}
-@keyframes waveOut{0%{transform:translate(-50%,-50%) scale(.6);opacity:.9;filter:hue-rotate(0deg) blur(10px)}100%{transform:translate(-50%,-50%) scale(2.1);opacity:0;filter:hue-rotate(180deg) blur(20px)}}
-
-.orb{width:min(42vh,60vw);height:min(42vh,60vw);max-width:380px;max-height:380px;border-radius:50%;cursor:pointer;position:relative;isolation:isolate;background:radial-gradient(circle at 50% 45%,var(--orb-inner),var(--orb-mid) 30%,var(--orb-outer) 62%, rgba(12,5,22,1) 86%);box-shadow:0 0 60px rgba(124,58,237,.6),0 0 140px rgba(212,175,55,.45),inset 0 0 90px rgba(255,255,255,.65);animation:throb 2.4s ease-in-out infinite;transition:transform 90ms ease,box-shadow 300ms ease,background 600ms ease}
-.orb::after{content:"";position:absolute;inset:8%;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 40% 30%,rgba(255,255,255,.95),rgba(245,212,107,.4) 40%,transparent 70%);filter:blur(2px);mix-blend-mode:screen}
-@keyframes throb{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
-
-.particle{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;mix-blend-mode:screen;opacity:0;filter:blur(.6px) drop-shadow(0 0 10px rgba(255,255,255,.45));will-change:transform,opacity}
-.particle.gold{background:radial-gradient(circle,var(--gold-soft),var(--gold));box-shadow:0 0 22px rgba(245,212,107,.95)}
-.particle.purple{background:radial-gradient(circle,var(--purple-soft),var(--purple));box-shadow:0 0 22px rgba(168,140,246,.95)}
-
-.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding-bottom:10px}
-
-/* Slide-up panels (Vault & Store) */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease}
-.modal-bg.active{opacity:1;pointer-events:all}
-.panel{width:100%;max-width:560px;background:radial-gradient(1000px 800px at 50% 0%, rgba(255,216,109,.65), rgba(106,0,255,.75));border-radius:20px 20px 0 0;border-top:2px solid var(--gold);box-shadow:0 -6px 40px rgba(124,58,237,.45);transform:translateY(100%);transition:transform .35s ease;padding:18px}
-.modal-bg.active .panel{transform:translateY(0)}
-.panel h2{color:#fff;text-align:center;margin:6px 0 8px;text-shadow:0 0 10px rgba(255,255,255,.6)}
-
-/* Vault grid */
-.vault-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.card{height:130px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;box-shadow:0 0 10px rgba(255,255,255,.5)}
-.card.lock{background:#2a2141;color:#6c5c93}
-.card.on{background:linear-gradient(180deg,#ffe877,#c37bff);color:#1a1034;text-shadow:0 0 6px rgba(255,255,255,.6)}
-
-/* Store items */
-.store-list{display:grid;grid-template-columns:1fr;gap:10px}
-.item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:rgba(20,12,36,.4);border:1px solid rgba(255,255,255,.2)}
-.item .meta{flex:1}
-.item .meta .name{font-weight:800}
-.item .meta .sub{font-size:12px;opacity:.9}
-.buy{padding:8px 12px;border:none;border-radius:10px;background:linear-gradient(90deg,var(--gold),var(--purple));color:#fff;font-weight:800;cursor:pointer}
-.icon{width:72px;height:72px;border-radius:14px;overflow:hidden;box-shadow:0 0 16px rgba(255,255,255,.55),0 0 22px rgba(212,175,55,.35);background:#0f0a1d;display:grid;place-items:center;border:2px solid rgba(245,212,107,.85)} .icon img{width:100%;height:100%;object-fit:contain;filter: drop-shadow(0 0 8px rgba(255,255,255,.45));} .item{display:flex;align-items:center;gap:14px;padding:12px;border-radius:14px;background:rgba(20,12,36,.55);border:1px solid rgba(255,255,255,.28)} .item .meta .name{font-weight:900;letter-spacing:.3px} .buy{padding:10px 14px;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.35);}
-
-/* Creature reveal overlay */
-.reveal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9);width:min(85vw,380px);border-radius:16px;padding:14px;background:rgba(255,255,255,.08);backdrop-filter:blur(6px);box-shadow:0 0 22px rgba(255,255,255,.35),0 0 40px rgba(212,175,55,.35);opacity:0;pointer-events:none}
-.reveal.show{opacity:1;pointer-events:all;animation:pop .5s ease-out forwards}
-@keyframes pop{0%{transform:translate(-50%,-52%) scale(.88)}100%{transform:translate(-50%,-50%) scale(1)}}
-.reveal .name{font-weight:800;text-align:center;margin:4px 0}
-.reveal .type{font-size:12px;opacity:.9;text-align:center}
-.reveal .q{font-style:italic;font-size:12px;text-align:center;margin-top:6px}
-
-.wm-left{position:fixed;left:10px;bottom:10px;font-size:11px;opacity:.6;color:#cdb7ff}
-
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Soul Reactor v3.7 — Resonance Update</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --gold:#d4af37;--purple:#7c3aed;--bg0:#0b0613;--bg1:#120a21;
+  --rainbow:linear-gradient(90deg,#ff0080,#ff8c00,#ffe600,#21d07a,#00b3ff,#7c3aed,#ff0080);
+}
+*{box-sizing:border-box}
+body{margin:0;height:100vh;display:flex;flex-direction:column;
+  background:radial-gradient(circle at 50% 30%,rgba(124,58,237,.1),transparent 60%),linear-gradient(180deg,var(--bg1),var(--bg0));
+  font-family:Orbitron,sans-serif;color:#fff;overflow:hidden;}
+header{display:flex;justify-content:center;align-items:center;gap:10px;padding:8px;flex-wrap:wrap;}
+.pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);}
+.btn{background:linear-gradient(90deg,var(--gold),var(--purple));border:none;color:#fff;
+  border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.4);}
+.btn.out{background:transparent;border:1px solid var(--gold);color:var(--gold);}
+.xp-wrap{width:min(90vw,960px);margin:8px auto;}
+.xp{height:28px;border-radius:999px;position:relative;overflow:hidden;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);}
+.xp::before{content:"";position:absolute;inset:0;background:var(--rainbow);
+  background-size:400% 100%;filter:blur(6px);opacity:.6;animation:rainbow 10s linear infinite;}
+.xp-fill{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--gold),var(--purple));transition:width .4s ease;}
+.xp-text{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;}
+@keyframes rainbow{0%{background-position:0 0}100%{background-position:400% 0}}
+.arena{flex:1;display:grid;place-items:center;position:relative;}
+.orb{width:min(40vh,300px);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 50% 45%,#fff6e0,#e1c25b 30%,rgba(124,58,237,.85) 65%,rgba(10,5,20,1) 85%);
+  box-shadow:0 0 60px rgba(124,58,237,.6),0 0 140px rgba(212,175,55,.45);
+  animation:throb 3s ease-in-out infinite;cursor:pointer;}
+@keyframes throb{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.controls{display:flex;justify-content:center;gap:12px;padding:12px;}
+.modal-bg{position:fixed;inset:0;display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .3s ease;}
+.modal-bg.active{opacity:1;pointer-events:all;}
+.panel{width:100%;max-width:560px;border-radius:20px 20px 0 0;
+  background:radial-gradient(900px 700px at 50% 0%,rgba(255,216,109,.65),rgba(106,0,255,.75));
+  border-top:2px solid var(--gold);box-shadow:0 -6px 40px rgba(124,58,237,.45);
+  transform:translateY(100%);transition:transform .35s ease;padding:18px;}
+.modal-bg.active .panel{transform:translateY(0);}
+.panel h2{text-align:center;margin:6px 0 10px;text-shadow:0 0 10px rgba(255,255,255,.6);}
+.vault-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.card{height:120px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  box-shadow:0 0 10px rgba(255,255,255,.5);}
+.card.lock{background:#2a2141;color:#6c5c93;}
+.card.on{background:linear-gradient(180deg,#ffe877,#c37bff);color:#111;}
+.store-list{display:grid;gap:10px;}
+.item{display:flex;align-items:center;gap:14px;padding:10px;border-radius:12px;background:rgba(20,12,36,.45);border:1px solid rgba(255,255,255,.25);}
+.icon{width:96px;height:96px;border-radius:14px;overflow:hidden;position:relative;
+  background:#0f0a1d;box-shadow:0 0 20px rgba(255,255,255,.45),0 0 30px rgba(124,58,237,.35);}
+.icon img{width:100%;height:100%;object-fit:contain;animation:rainbowGlow 3s linear infinite;}
+@keyframes rainbowGlow{
+  0%{filter:drop-shadow(0 0 4px #ff0080);}
+  20%{filter:drop-shadow(0 0 4px #ff8c00);}
+  40%{filter:drop-shadow(0 0 4px #ffe600);}
+  60%{filter:drop-shadow(0 0 4px #21d07a);}
+  80%{filter:drop-shadow(0 0 4px #00b3ff);}
+  100%{filter:drop-shadow(0 0 4px #7c3aed);}
+}
+.meta{flex:1}
+.name{font-weight:800}
+.sub{font-size:12px;opacity:.85}
+.buy{padding:8px 12px;border:none;border-radius:10px;background:linear-gradient(90deg,var(--gold),var(--purple));
+  color:#fff;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4);}
+footer{font-size:11px;opacity:.6;text-align:center;padding:4px;}
+</style>
 </head>
 <body>
-  <header>
-    <div class="pill">Souls: <span id="souls">0</span></div>
-    <div class="pill">Stage: <span id="stage">Ember</span></div>
-    <button id="soundBtn" class="btn out">🔇 Sound Off</button>
-  </header>  <!-- XP BAR -->  <div class="xp-wrap">
-    <div class="xp" id="xpBar">
-      <div class="xp-fill" id="xpFill"></div>
-      <div class="xp-text" id="xpText">XP: 0 / 100</div>
-    </div>
-  </div>  <main class="arena">
-    <div class="pulse" id="pulse"></div>
-    <div class="orb" id="orb" role="button" aria-label="Generate soul energy"></div>
-  </main>  <div class="controls">
-    <button class="btn" id="openStore">🛒 Shop</button>
-    <button class="btn" id="openVault">🧬 Creatures</button>
-    <button class="btn out" id="force">⚡ Force Level-Up</button>
-  </div>  <!-- Vault slide-up -->  <div class="modal-bg" id="vaultModal">
-    <div class="panel">
-      <h2>🧬 Vault of Life</h2>
-      <div class="vault-grid" id="vaultGrid"></div>
-      <button class="btn out" id="closeVault" style="margin-top:10px;width:100%">Close</button>
-    </div>
-  </div>  <!-- Store slide-up -->  <div class="modal-bg" id="storeModal">
-    <div class="panel">
-      <h2>🛒 Reactor Upgrades</h2>
-      <div class="store-list">
-        <div class="item">
-          <div class="icon"><img id="icoAmplifier" alt="Amplifier"/></div>
-          <div class="meta"><div class="name">🪽 Amplifier</div><div class="sub">+1 Souls per Tap</div></div>
-          <button class="buy" data-up="tap" data-cost="100">Buy 100💠</button>
-        </div>
-        <div class="item">
-          <div class="icon"><img id="icoBooster" alt="Booster"/></div>
-          <div class="meta"><div class="name">🔥 Booster</div><div class="sub">+1 Souls / sec</div></div>
-          <button class="buy" data-up="auto" data-cost="250">Buy 250💠</button>
-        </div>
-        <div class="item">
-          <div class="icon"><img id="icoSurge" alt="Surge"/></div>
-          <div class="meta"><div class="name">⚡ Surge</div><div class="sub">x2 Global for 10s</div></div>
-          <button class="buy" data-up="surge" data-cost="300">Buy 300💠</button>
-        </div>
+<header>
+  <div class="pill">Souls: <span id="souls">0</span></div>
+  <div class="pill">Stage: <span id="stage">Ember</span></div>
+  <button id="soundBtn" class="btn out">🔇 Sound Off</button>
+</header>
+<div class="xp-wrap">
+  <div class="xp"><div id="xpFill" class="xp-fill"></div><div id="xpText" class="xp-text">XP 0 / 100</div></div>
+</div>
+<div class="arena">
+  <div id="orb" class="orb"></div>
+</div>
+<div class="controls">
+  <button id="openStore" class="btn">🛒 Shop</button>
+  <button id="openVault" class="btn">🧬 Creatures</button>
+  <button id="force" class="btn out">⚡ Force Level-Up</button>
+</div>
+
+<!-- Store -->
+<div id="storeModal" class="modal-bg">
+  <div class="panel">
+    <h2>🛒 Reactor Upgrades</h2>
+    <div class="store-list">
+      <div class="item">
+        <div class="icon"><img src="assets/amplifier.png" alt="Amplifier"></div>
+        <div class="meta"><div class="name">🪽 Amplifier</div><div class="sub">+1 Souls per Tap</div></div>
+        <button class="buy" data-up="tap" data-cost="100">Buy 100💠</button>
       </div>
-      <div id="storeMsg" style="text-align:center;margin-top:8px;color:#fff"></div>
-      <button class="btn out" id="closeStore" style="margin-top:10px;width:100%">Close</button>
+      <div class="item">
+        <div class="icon"><img src="assets/booster.png" alt="Booster"></div>
+        <div class="meta"><div class="name">🔥 Booster</div><div class="sub">+1 Souls / sec</div></div>
+        <button class="buy" data-up="auto" data-cost="250">Buy 250💠</button>
+      </div>
+      <div class="item">
+        <div class="icon"><img src="assets/surge.png" alt="Surge"></div>
+        <div class="meta"><div class="name">⚡ Surge</div><div class="sub">x2 Global for 10s</div></div>
+        <button class="buy" data-up="surge" data-cost="300">Buy 300💠</button>
+      </div>
     </div>
-  </div>  <!-- Creature reveal overlay -->  <div class="reveal" id="reveal">
-    <div class="name" id="rName"></div>
-    <div class="type" id="rType"></div>
-    <div class="q" id="rQuote"></div>
-  </div>  <div class="wm-left">v3.6.1 — Soul Reactor • Vault & Store Reunited</div><script>
-(() => {
-  // ===== Elements =====
-  const orb = document.getElementById('orb');
-  const soulsEl = document.getElementById('souls');
-  const stageEl = document.getElementById('stage');
-  const xpFill = document.getElementById('xpFill');
-  const xpText = document.getElementById('xpText');
-  const pulse = document.getElementById('pulse');
-  const openVault = document.getElementById('openVault');
-  const vaultModal = document.getElementById('vaultModal');
-  const closeVault = document.getElementById('closeVault');
-  const openStore = document.getElementById('openStore');
-  const storeModal = document.getElementById('storeModal');
-  const closeStore = document.getElementById('closeStore');
-  const grid = document.getElementById('vaultGrid');
-  const forceBtn = document.getElementById('force');
-  const soundBtn = document.getElementById('soundBtn');
-  const r = { box: document.getElementById('reveal'), name: document.getElementById('rName'), type: document.getElementById('rType'), quote: document.getElementById('rQuote') };
-  const msg = document.getElementById('storeMsg');
+    <div id="storeMsg" style="text-align:center;margin-top:8px;"></div>
+    <button id="closeStore" class="btn out" style="width:100%;margin-top:10px;">Close</button>
+  </div>
+</div>
 
-  // ===== Inline icon data (embedded SVG -> data URI) =====
-  const dataWinged = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><radialGradient id="g1" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="%23ffffff"/><stop offset="0.55" stop-color="%23ffd86d"/><stop offset="1" stop-color="%237c3aed"/></radialGradient></defs><rect width="128" height="128" rx="18" fill="%23080a16"/><circle cx="64" cy="64" r="30" fill="url(%23g1)"/><path d="M102 56c-10 3-17 11-22 22 12 2 24-2 30-10 5-6 1-15-8-12zM26 56c10 3 17 11 22 22-12 2-24-2-30-10-5-6-1-15 8-12z" fill="%23ffd86d" stroke="%23ffffff" stroke-width="2" opacity=".95"/></svg>';
-  const dataFlame  = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="18" fill="%23080a16"/><path d="M64 18c14 18 6 26 6 34s10 12 10 24-9 26-28 26S28 90 28 80s8-18 16-24 6-14 20-38z" fill="%2300e0ff" stroke="%23ffffff" stroke-width="3"/><circle cx="64" cy="92" r="18" fill="%2346ffb6" stroke="%23ffffff" stroke-width="2"/></svg>';
-  const dataBolt   = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="18" fill="%23080a16"/><polygon points="72,10 48,70 82,70 50,118 108,52 74,52" fill="%2300d0ff" stroke="%23ffffff" stroke-width="4"/><circle cx="64" cy="98" r="20" fill="%23a06dff" stroke="%23ffffff" stroke-width="3"/></svg>';
-  document.getElementById('icoAmplifier').src = dataWinged; // 🪽 Amplifier
-  document.getElementById('icoBooster').src   = dataFlame;  // 🔥 Booster
-  document.getElementById('icoSurge').src     = dataBolt;   // ⚡ Surge
+<!-- Vault -->
+<div id="vaultModal" class="modal-bg">
+  <div class="panel">
+    <h2>🧬 Vault of Life</h2>
+    <div id="vaultGrid" class="vault-grid"></div>
+    <button id="closeVault" class="btn out" style="width:100%;margin-top:10px;">Close</button>
+  </div>
+</div>
 
-  // ===== Stages =====
-  const STAGES = [
-    { name:'Ember', threshold:0, colors:{ inner:'#fff6e0', mid:'#e1c25b', outer:'rgba(124,58,237,.85)', pg:'rgba(212,175,55,.28)', pp:'rgba(124,58,237,.22)' } },
-    { name:'Lumen', threshold:100, colors:{ inner:'#ffffff', mid:'#f1db87', outer:'rgba(168,120,255,.9)', pg:'rgba(230,200,100,.32)', pp:'rgba(150,95,255,.26)' } },
-    { name:'Resonant', threshold:1000, colors:{ inner:'#dcd1ff', mid:'#c89bff', outer:'rgba(120,70,245,.95)', pg:'rgba(190,140,255,.30)', pp:'rgba(124,58,237,.28)' } },
-    { name:'Cipher', threshold:10000, colors:{ inner:'#efe9ff', mid:'#e4c04f', outer:'rgba(135,60,255,.98)', pg:'rgba(212,175,55,.32)', pp:'rgba(135,60,255,.30)' } },
-    { name:'Ascendant', threshold:100000, colors:{ inner:'#ffffff', mid:'#fff3b0', outer:'rgba(255,255,255,.9)', pg:'rgba(255,230,120,.36)', pp:'rgba(190,150,255,.32)' } },
-  ];
+<footer>v3.7 — Soul Reactor: Resonance Update</footer>
 
-  // ===== Creatures =====
-  const CREATURES = [
-    { id:'A', name:'Ameego', type:'Ameba', quote:'I absorb all criticism!' },
-    { id:'B', name:'Bubo', type:'Beetle', quote:'Error 404: Chill not found.' },
-    { id:'C', name:'Crumbly', type:'Crustacean', quote:"Don't touch my house — it’s half dessert!" },
-  ];
-
-  // ===== State =====
-  const state = {
-    souls: +(localStorage.getItem('souls')||0), perTap: +(localStorage.getItem('perTap')||1), mult: +(localStorage.getItem('mult')||1),
-    auto: +(localStorage.getItem('auto')||0), sound: (localStorage.getItem('sound')||'off'),
-    unlocked: JSON.parse(localStorage.getItem('vaultUnlocks')||'[]'),
-    surgeUntil: +(localStorage.getItem('surgeUntil')||0),
-  };
-
-  function save(){
-    localStorage.setItem('souls', state.souls);
-    localStorage.setItem('perTap', state.perTap);
-    localStorage.setItem('mult', state.mult);
-    localStorage.setItem('auto', state.auto);
-    localStorage.setItem('sound', state.sound);
-    localStorage.setItem('vaultUnlocks', JSON.stringify(state.unlocked));
-    localStorage.setItem('surgeUntil', state.surgeUntil);
-  }
-
-  function fmt(n){ if(n>=1e9) return (n/1e9).toFixed(2)+'B'; if(n>=1e6) return (n/1e6).toFixed(2)+'M'; if(n>=1e3) return (n/1e3).toFixed(1)+'K'; return Math.floor(n).toString(); }
-  function stageIndex(total){ let idx=0; for(let i=0;i<STAGES.length;i++){ if(total>=STAGES[i].threshold) idx=i; else break; } return idx; }
-  function nextThreshold(idx){ return idx>=STAGES.length-1 ? null : STAGES[idx+1].threshold; }
-
-  let lastStage = stageIndex(state.souls);
-  applyStageColors(lastStage);
-
-  function applyStageColors(idx){
-    const c = STAGES[idx].colors; const root = document.documentElement.style;
-    root.setProperty('--orb-inner', c.inner); root.setProperty('--orb-mid', c.mid); root.setProperty('--orb-outer', c.outer); root.setProperty('--pulse-gold', c.pg); root.setProperty('--pulse-purple', c.pp);
-  }
-
-  function updateXP(){
-    const idx = stageIndex(state.souls);
-    const next = nextThreshold(idx);
-    if(next===null){ xpFill.style.width='100%'; xpText.textContent='XP: MAX'; return; }
-    const base = STAGES[idx].threshold; const p = Math.max(0, Math.min(1, (state.souls-base)/(next-base)));
-    xpFill.style.width = (p*100).toFixed(1)+'%';
-    xpText.textContent = `XP: ${fmt(state.souls)} / ${fmt(next)}`;
-  }
-
-  function pulseWave(){ pulse.classList.remove('show'); void pulse.offsetWidth; pulse.classList.add('show'); setTimeout(()=>pulse.classList.remove('show'),900); }
-  function rainbowWave(){ const w=document.createElement('div'); w.className='wave'; document.body.appendChild(w); setTimeout(()=>w.remove(),1450); }
-
-  // Particles (pooled)
-  const particles=[]; for(let i=0;i<80;i++){ const p=document.createElement('div'); p.className='particle '+(i%2?'gold':'purple'); p.style.opacity=0; p.style.transform='translate(-50%,-50%) scale(.4)'; document.body.appendChild(p); particles.push({el:p,busy:false}); }
-  function fireParticle(cx,cy,a,d){ const slot=particles.find(pt=>!pt.busy)||particles[0]; slot.busy=true; const el=slot.el; const tx=cx+Math.cos(a)*d; const ty=cy+Math.sin(a)*d; el.style.left=cx+'px'; el.style.top=cy+'px'; el.style.opacity=1; const anim=el.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:.98},{transform:`translate(${tx-cx}px,${ty-cy}px) scale(.25)`,opacity:0}],{duration:1400+Math.random()*600,easing:'cubic-bezier(.22,.61,.36,1)',fill:'forwards'}); anim.onfinish=()=>{el.style.opacity=0; slot.busy=false}; }
-  function burst(x,y){ for(let i=0;i<36;i++){ fireParticle(x,y,Math.random()*Math.PI*2,120+Math.random()*220); } }
-
-  function updateUI(){ soulsEl.textContent = fmt(state.souls); const idx=stageIndex(state.souls); const name=STAGES[idx].name; stageEl.textContent=name; updateXP(); if(idx>lastStage){ applyStageColors(idx); stageFlare(); playGust(); revealCreature(idx); lastStage=idx; } save(); }
-
-  function stageFlare(){ pulseWave(); rainbowWave(); orb.style.boxShadow='0 0 90px rgba(124,58,237,.85),0 0 200px rgba(212,175,55,.65),inset 0 0 120px rgba(255,255,255,.9)'; setTimeout(()=>{ orb.style.boxShadow='0 0 60px rgba(124,58,237,.6),0 0 140px rgba(212,175,55,.45),inset 0 0 90px rgba(255,255,255,.65)'; },1200); }
-
-  // ===== Audio via WebAudio (embedded synthesis) =====
-  let ctx=null, master=null, reverb=null, bgTimer=null; function makeIR(seconds=3,decay=3.2){ const rate=ctx.sampleRate; const len=rate*seconds; const imp=ctx.createBuffer(2,len,rate); for(let c=0;c<2;c++){ const ch=imp.getChannelData(c); for(let i=0;i<len;i++){ ch[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay); } } return imp; }
-  function ensureAudio(){ if(state.sound!=='on') return; if(!ctx){ ctx=new (window.AudioContext||window.webkitAudioContext)(); master=ctx.createGain(); master.gain.value=.5; master.connect(ctx.destination); const conv=ctx.createConvolver(); conv.buffer=makeIR(); reverb=ctx.createGain(); reverb.gain.value=.25; conv.connect(reverb); reverb.connect(master); startChimes(); } else if(ctx.state==='suspended'){ ctx.resume(); } }
-  function startChimes(){ if(bgTimer) clearInterval(bgTimer); bgTimer=setInterval(()=>{ if(state.sound!=='on'||!ctx) return; const base=440*Math.pow(2,(Math.random()*12-6)/12); for(let i=0;i<3;i++) setTimeout(()=>playChime(base*(i===0?1:(i===1?1.25:1.5))),i*220); },3200); }
-  function playChime(f){ const o1=ctx.createOscillator();o1.type='sine';o1.frequency.value=f; const o2=ctx.createOscillator();o2.type='triangle';o2.frequency.value=f*2; const g=ctx.createGain(); g.gain.value=0.0001; o1.connect(g);o2.connect(g); g.connect(reverb);g.connect(master); const t=ctx.currentTime; g.gain.exponentialRampToValueAtTime(.18,t+.01); g.gain.exponentialRampToValueAtTime(0.0001,t+2.4); o1.start();o2.start(); o1.stop(t+2.5);o2.stop(t+2.5); }
-  function playSparkle(){ if(state.sound!=='on'||!ctx) return; const o=ctx.createOscillator();o.type='triangle';o.frequency.value=1600+Math.random()*800; const g=ctx.createGain();g.gain.value=0.0001; const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=800; o.connect(hp); hp.connect(g); g.connect(reverb);g.connect(master); const t=ctx.currentTime; g.gain.exponentialRampToValueAtTime(.22,t+.01); g.gain.exponentialRampToValueAtTime(0.0001,t+.25); o.start(); o.stop(t+.26); }
-  function playGust(){ if(state.sound!=='on'||!ctx){ rainbowWave(); return; } const buf=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate); const data=buf.getChannelData(0); for(let i=0;i<data.length;i++) data[i]=Math.random()*2-1; const src=ctx.createBufferSource(); src.buffer=buf; const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=.7; bp.frequency.value=600; const g=ctx.createGain(); g.gain.value=0.0001; src.connect(bp); bp.connect(g); g.connect(reverb); g.connect(master); const t=ctx.currentTime; bp.frequency.linearRampToValueAtTime(1100,t+.5); g.gain.exponentialRampToValueAtTime(.35,t+.05); g.gain.exponentialRampToValueAtTime(0.0001,t+1.2); src.start(); src.stop(t+1.25); rainbowWave(); }
-  setInterval(()=>{ if(state.sound==='on'&&ctx&&ctx.state==='suspended') ctx.resume(); },10000);
-  function setSound(on){ state.sound = on?'on':'off'; soundBtn.textContent = on?'🔊 Sound On':'🔇 Sound Off'; save(); if(on){ ensureAudio(); } else { if(ctx) ctx.suspend(); } }
-
-  // Interactions
-  function tap(e){ if(state.sound==='on') ensureAudio(); const x=(e.clientX||(e.touches&&e.touches[0].clientX)||window.innerWidth/2); const y=(e.clientY||(e.touches&&e.touches[0].clientY)||window.innerHeight/2); burst(x,y); pulseWave(); orb.style.transform='scale(.985)'; setTimeout(()=>orb.style.transform='scale(1)',90); const multBoost = (Date.now()<state.surgeUntil)?2:1; state.souls += state.perTap*state.mult*multBoost; playSparkle(); updateUI(); }
-  orb.addEventListener('click',tap); orb.addEventListener('touchstart',ev=>tap(ev.touches[0]),{passive:true});
-
-  // Vault
-  function renderVault(){ grid.innerHTML=''; CREATURES.forEach(c=>{ const d=document.createElement('div'); d.className='card '+(state.unlocked.includes(c.id)?'on':'lock'); d.innerHTML = state.unlocked.includes(c.id)?`<div><b>${c.name}</b><div style="font-size:12px">${c.type}</div><div style="font-size:11px;opacity:.8">“${c.quote}”</div></div>`:`<div style="font-size:34px;opacity:.7">${c.id}</div>`; grid.appendChild(d); }); }
-  openVault.onclick=()=>{ storeModal.classList.remove('active'); vaultModal.classList.add('active'); renderVault(); if(state.sound==='on') ensureAudio(); };
-  closeVault.onclick=()=>vaultModal.classList.remove('active');
-
-  // Store
-  openStore.onclick=()=>{ vaultModal.classList.remove('active'); storeModal.classList.add('active'); if(state.sound==='on') ensureAudio(); };
-  closeStore.onclick=()=>storeModal.classList.remove('active');
-  document.querySelectorAll('.buy').forEach(btn=>{
-    btn.onclick=()=>{
-      const cost=+btn.dataset.cost; const up=btn.dataset.up; if(state.souls < cost){ msg.textContent='Not enough souls.'; return; }
-      state.souls -= cost; if(up==='tap'){ state.perTap += 1; msg.textContent='Amplifier purchased: +1 / tap'; }
-      else if(up==='auto'){ state.auto += 1; msg.textContent='Booster purchased: +1 / sec'; }
-      else if(up==='surge'){ state.surgeUntil = Date.now() + 10000; msg.textContent='Surge active: x2 for 10s!'; }
-      updateUI();
-    };
-  });
-
-  // Reveal creature at level-up
-  function revealCreature(idx){ const n = Math.min(idx, CREATURES.length); const c = CREATURES[n-1]; if(!c) return; if(!state.unlocked.includes(c.id)) state.unlocked.push(c.id); save(); r.name.textContent = `${c.name}`; r.type.textContent = `${c.type} Type`; r.quote.textContent = `“${c.quote}”`; r.box.classList.add('show'); setTimeout(()=>{ r.box.classList.remove('show'); renderVault(); }, 2500); }
-
-  // Force level-up (debug)
-  forceBtn.onclick=()=>{ state.souls = STAGES[Math.min(stageIndex(state.souls)+1, STAGES.length-1)].threshold; updateUI(); };
-
-  // Sound toggle
-  soundBtn.onclick=()=> setSound(state.sound!=='on');
-
-  // Auto generation
-  setInterval(()=>{ const multBoost=(Date.now()<state.surgeUntil)?2:1; if(state.auto>0){ state.souls += state.auto*state.mult*multBoost; updateUI(); } }, 1000);
-
-  // Initial draw
-  updateUI(); setSound(state.sound==='on');
-  ['click','touchstart'].forEach(evt=>document.addEventListener(evt,()=>ensureAudio(),{once:true,passive:true}));
-})();
-</script></body>
+<script>
+const soulsEl=document.getElementById("souls");
+const stageEl=document.getElementById("stage");
+const xpFill=document.getElementById("xpFill");
+const xpText=document.getElementById("xpText");
+const orb=document.getElementById("orb");
+const storeModal=document.getElementById("storeModal");
+const vaultModal=document.getElementById("vaultModal");
+document.getElementById("openStore").onclick=()=>{vaultModal.classList.remove("active");storeModal.classList.add("active");};
+document.getElementById("openVault").onclick=()=>{storeModal.classList.remove("active");vaultModal.classList.add("active");renderVault();};
+document.getElementById("closeStore").onclick=()=>storeModal.classList.remove("active");
+document.getElementById("closeVault").onclick=()=>vaultModal.classList.remove("active");
+const CREATURES=[{id:"A",name:"Ameego",type:"Ameba",quote:"I absorb all criticism!"},{id:"B",name:"Bubo",type:"Beetle",quote:"Error 404: Chill not found."},{id:"C",name:"Crumbly",type:"Crustacean",quote:"Don't touch my house — it’s half dessert!"}];
+let state={souls:0,perTap:1,auto:0,unlocked:[]};
+function renderVault(){const g=document.getElementById("vaultGrid");g.innerHTML="";CREATURES.forEach(c=>{const d=document.createElement("div");d.className="card "+(state.unlocked.includes(c.id)?"on":"lock");d.innerHTML=state.unlocked.includes(c.id)?`<b>${c.name}</b><div>${c.type}</div><div style='font-size:11px;opacity:.8'>“${c.quote}”</div>`:`<div style='font-size:34px;opacity:.7'>${c.id}</div>`;g.appendChild(d);});}
+function update(){soulsEl.textContent=state.souls;xpFill.style.width=Math.min(state.souls,100)+"%";xpText.textContent="XP "+state.souls+" / 100";}
+orb.onclick=()=>{state.souls+=state.perTap;update();};
+setInterval(()=>{if(state.auto>0){state.souls+=state.auto;update();}},1000);
+document.querySelectorAll(".buy").forEach(btn=>btn.onclick=()=>{const cost=+btn.dataset.cost;if(state.souls<cost)return;state.souls-=cost;if(btn.dataset.up=="tap")state.perTap++;else if(btn.dataset.up=="auto")state.auto++;update();});
+document.getElementById("force").onclick=()=>{state.unlocked.push("A","B","C");renderVault();};
+update();
+</script>
+</body>
 </html>

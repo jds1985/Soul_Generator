@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Soul Reactor v3.8 — Creator Mode</title>
+<title>Soul Reactor v3.9 — Cinematic Drawer Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
 <style>
 :root{
@@ -11,9 +11,11 @@
  --rainbow:linear-gradient(90deg,#ff0080,#ff8c00,#ffe600,#21d07a,#00b3ff,#7c3aed,#ff0080);
 }
 *{box-sizing:border-box}
-body{margin:0;height:100vh;display:flex;flex-direction:column;
+body{
+ margin:0;height:100vh;display:flex;flex-direction:column;
  background:radial-gradient(circle at 50% 30%,rgba(124,58,237,.1),transparent 60%),linear-gradient(180deg,var(--bg1),var(--bg0));
- font-family:Orbitron,sans-serif;color:#fff;overflow:hidden;}
+ font-family:Orbitron,sans-serif;color:#fff;overflow:hidden;
+}
 header{display:flex;justify-content:center;align-items:center;gap:10px;padding:8px;flex-wrap:wrap;}
 .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);}
 .btn{background:linear-gradient(90deg,var(--gold),var(--purple));border:none;color:#fff;
@@ -32,14 +34,25 @@ header{display:flex;justify-content:center;align-items:center;gap:10px;padding:8
  animation:throb 3s ease-in-out infinite;cursor:pointer;}
 @keyframes throb{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
 .controls{display:flex;justify-content:center;gap:12px;padding:12px;}
-.modal-bg{position:fixed;inset:0;display:flex;align-items:flex-end;justify-content:center;
- background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .3s ease;}
+
+/* MODAL DRAWERS */
+.modal-bg{
+ position:fixed;inset:0;display:flex;align-items:flex-end;justify-content:center;
+ background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:20;
+}
 .modal-bg.active{opacity:1;pointer-events:all;}
-.panel{width:100%;max-width:560px;border-radius:20px 20px 0 0;
+.panel{
+ width:100%;max-width:560px;
+ max-height:calc(100vh - env(safe-area-inset-top) - 60px);
+ overflow-y:auto;border-radius:20px 20px 0 0;
  background:radial-gradient(900px 700px at 50% 0%,rgba(255,216,109,.65),rgba(106,0,255,.75));
- border-top:2px solid var(--gold);box-shadow:0 -6px 40px rgba(124,58,237,.45);
- transform:translateY(100%);transition:transform .35s ease;padding:18px;}
+ border-top:2px solid var(--gold);
+ box-shadow:0 -10px 50px rgba(124,58,237,.55),0 0 80px rgba(255,215,0,.25);
+ transform:translateY(100%);transition:transform .45s cubic-bezier(.25,.8,.25,1);
+ padding:18px;
+}
 .modal-bg.active .panel{transform:translateY(0);}
+@supports(padding:max(0px)){.panel{padding-bottom:max(24px,env(safe-area-inset-bottom));}}
 .panel h2{text-align:center;margin:6px 0 10px;text-shadow:0 0 10px rgba(255,255,255,.6);}
 .vault-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
 .card{height:150px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -57,12 +70,12 @@ header{display:flex;justify-content:center;align-items:center;gap:10px;padding:8
  background:#0f0a1d;box-shadow:0 0 20px rgba(255,255,255,.45),0 0 30px rgba(124,58,237,.35);cursor:pointer;}
 .icon img{width:100%;height:100%;object-fit:contain;animation:rainbowGlow 3s linear infinite;}
 @keyframes rainbowGlow{
-  0%{filter:drop-shadow(0 0 4px #ff0080);}
-  20%{filter:drop-shadow(0 0 4px #ff8c00);}
-  40%{filter:drop-shadow(0 0 4px #ffe600);}
-  60%{filter:drop-shadow(0 0 4px #21d07a);}
-  80%{filter:drop-shadow(0 0 4px #00b3ff);}
-  100%{filter:drop-shadow(0 0 4px #7c3aed);}
+ 0%{filter:drop-shadow(0 0 4px #ff0080);}
+ 20%{filter:drop-shadow(0 0 4px #ff8c00);}
+ 40%{filter:drop-shadow(0 0 4px #ffe600);}
+ 60%{filter:drop-shadow(0 0 4px #21d07a);}
+ 80%{filter:drop-shadow(0 0 4px #00b3ff);}
+ 100%{filter:drop-shadow(0 0 4px #7c3aed);}
 }
 .meta{flex:1}
 .name{font-weight:800}
@@ -70,77 +83,78 @@ header{display:flex;justify-content:center;align-items:center;gap:10px;padding:8
 .buy{padding:8px 12px;border:none;border-radius:10px;background:linear-gradient(90deg,var(--gold),var(--purple));
  color:#fff;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4);}
 #resetBtn{position:fixed;right:12px;bottom:12px;padding:8px 12px;border-radius:10px;
- background:linear-gradient(90deg,#ffd86d,#7c3aed);border:none;color:#fff;cursor:pointer;font-weight:700;}
+ background:linear-gradient(90deg,#ffd86d,#7c3aed);border:none;color:#fff;cursor:pointer;font-weight:700;z-index:30;}
 footer{font-size:11px;opacity:.6;text-align:center;padding:4px;}
 </style>
 </head>
 <body>
 <header>
-  <div class="pill">Souls: <span id="souls">0</span></div>
-  <div class="pill">Stage: <span id="stage">Ember</span></div>
-  <button id="soundBtn" class="btn out">🔇 Sound Off</button>
+ <div class="pill">Souls: <span id="souls">0</span></div>
+ <div class="pill">Stage: <span id="stage">Ember</span></div>
+ <button id="soundBtn" class="btn out">🔇 Sound Off</button>
 </header>
+
 <div class="xp-wrap">
-  <div class="xp"><div id="xpFill" class="xp-fill"></div><div id="xpText" class="xp-text">XP 0 / 100</div></div>
+ <div class="xp"><div id="xpFill" class="xp-fill"></div><div id="xpText" class="xp-text">XP 0 / 100</div></div>
 </div>
+
 <div class="arena"><div id="orb" class="orb"></div></div>
+
 <div class="controls">
-  <button id="openStore" class="btn">🛒 Shop</button>
-  <button id="openVault" class="btn">🧬 Creatures</button>
-  <button id="force" class="btn out">⚡ Force Level-Up</button>
+ <button id="openStore" class="btn">🛒 Shop</button>
+ <button id="openVault" class="btn">🧬 Creatures</button>
+ <button id="force" class="btn out">⚡ Force Level-Up</button>
 </div>
 
 <!-- STORE -->
 <div id="storeModal" class="modal-bg">
  <div class="panel">
-   <h2>🛒 Reactor Upgrades</h2>
-   <div class="store-list">
-     <div class="item">
-       <div class="icon" data-key="amplifier"><img id="ampImg" src="assets/amplifier.png" alt="Amplifier"/><div class="edit-overlay"></div></div>
-       <div class="meta"><div class="name">🪽 Amplifier</div><div class="sub">+1 Souls per Tap</div></div>
-       <button class="buy" data-up="tap" data-cost="100">Buy 100💠</button>
-     </div>
-     <div class="item">
-       <div class="icon" data-key="booster"><img id="boostImg" src="assets/booster.png" alt="Booster"/><div class="edit-overlay"></div></div>
-       <div class="meta"><div class="name">🔥 Booster</div><div class="sub">+1 Souls / sec</div></div>
-       <button class="buy" data-up="auto" data-cost="250">Buy 250💠</button>
-     </div>
-     <div class="item">
-       <div class="icon" data-key="surge"><img id="surgeImg" src="assets/surge.png" alt="Surge"/><div class="edit-overlay"></div></div>
-       <div class="meta"><div class="name">⚡ Surge</div><div class="sub">x2 Global for 10s</div></div>
-       <button class="buy" data-up="surge" data-cost="300">Buy 300💠</button>
-     </div>
+  <h2>🛒 Reactor Upgrades</h2>
+  <div class="store-list">
+   <div class="item">
+    <div class="icon" data-key="amplifier"><img id="ampImg" src="assets/amplifier.png" alt="Amplifier"/><div class="edit-overlay"></div></div>
+    <div class="meta"><div class="name">🪽 Amplifier</div><div class="sub">+1 Souls per Tap</div></div>
+    <button class="buy" data-up="tap" data-cost="100">Buy 100💠</button>
    </div>
-   <div id="storeMsg" style="text-align:center;margin-top:8px;"></div>
-   <button id="closeStore" class="btn out" style="width:100%;margin-top:10px;">Close</button>
+   <div class="item">
+    <div class="icon" data-key="booster"><img id="boostImg" src="assets/booster.png" alt="Booster"/><div class="edit-overlay"></div></div>
+    <div class="meta"><div class="name">🔥 Booster</div><div class="sub">+1 Souls / sec</div></div>
+    <button class="buy" data-up="auto" data-cost="250">Buy 250💠</button>
+   </div>
+   <div class="item">
+    <div class="icon" data-key="surge"><img id="surgeImg" src="assets/surge.png" alt="Surge"/><div class="edit-overlay"></div></div>
+    <div class="meta"><div class="name">⚡ Surge</div><div class="sub">x2 Global for 10s</div></div>
+    <button class="buy" data-up="surge" data-cost="300">Buy 300💠</button>
+   </div>
+  </div>
+  <div id="storeMsg" style="text-align:center;margin-top:8px;"></div>
+  <button id="closeStore" class="btn out" style="width:100%;margin-top:10px;">Close</button>
  </div>
 </div>
 
 <!-- VAULT -->
 <div id="vaultModal" class="modal-bg">
  <div class="panel">
-   <h2>🧬 Vault of Life</h2>
-   <div id="vaultGrid" class="vault-grid">
-     <div class="card" data-key="creatureA"><img src="assets/creatureA.png" alt="A"/><div class="edit-overlay"></div><div>A</div></div>
-     <div class="card" data-key="creatureB"><img src="assets/creatureB.png" alt="B"/><div class="edit-overlay"></div><div>B</div></div>
-     <div class="card" data-key="creatureC"><img src="assets/creatureC.png" alt="C"/><div class="edit-overlay"></div><div>C</div></div>
-   </div>
-   <button id="closeVault" class="btn out" style="width:100%;margin-top:10px;">Close</button>
+  <h2>🧬 Vault of Life</h2>
+  <div id="vaultGrid" class="vault-grid">
+   <div class="card" data-key="creatureA"><img src="assets/creatureA.png" alt="A"/><div class="edit-overlay"></div><div>A</div></div>
+   <div class="card" data-key="creatureB"><img src="assets/creatureB.png" alt="B"/><div class="edit-overlay"></div><div>B</div></div>
+   <div class="card" data-key="creatureC"><img src="assets/creatureC.png" alt="C"/><div class="edit-overlay"></div><div>C</div></div>
+  </div>
+  <button id="closeVault" class="btn out" style="width:100%;margin-top:10px;">Close</button>
  </div>
 </div>
 
 <button id="resetBtn">♻ Reset Images</button>
-<footer>v3.8 — Soul Reactor: Creator Mode (Full Cinematic)</footer>
+<footer>v3.9 — Soul Reactor: Cinematic Drawer Edition</footer>
 
 <script>
 const LS=window.localStorage;
-function saveImg(key,data){LS.setItem("img-"+key,data);}
-function loadImg(key){return LS.getItem("img-"+key);}
+function saveImg(k,d){LS.setItem("img-"+k,d);}
+function loadImg(k){return LS.getItem("img-"+k);}
 function resetAll(){if(confirm("Reset all progress and custom images?")){LS.clear();location.reload();}}
-
 document.getElementById("resetBtn").onclick=resetAll;
 
-// image upload logic
 function makeEditable(el){
  el.addEventListener("click",()=>{
    const inp=document.createElement("input");
@@ -156,13 +170,11 @@ function makeEditable(el){
    };
    inp.click();
  });
- const saved=loadImg(el.dataset.key);
- if(saved) el.querySelector("img").src=saved;
+ const s=loadImg(el.dataset.key);
+ if(s)el.querySelector("img").src=s;
 }
-
 document.querySelectorAll(".icon,[data-key^='creature']").forEach(makeEditable);
 
-// store + vault logic simplified
 const storeModal=document.getElementById("storeModal");
 const vaultModal=document.getElementById("vaultModal");
 document.getElementById("openStore").onclick=()=>{vaultModal.classList.remove("active");storeModal.classList.add("active");};
@@ -170,15 +182,12 @@ document.getElementById("openVault").onclick=()=>{storeModal.classList.remove("a
 document.getElementById("closeStore").onclick=()=>storeModal.classList.remove("active");
 document.getElementById("closeVault").onclick=()=>vaultModal.classList.remove("active");
 
-// simple soul logic
 let souls=0,perTap=1,auto=0;
-const soulsEl=document.getElementById("souls");
-const xpFill=document.getElementById("xpFill"),xpText=document.getElementById("xpText");
+const soulsEl=document.getElementById("souls"),xpFill=document.getElementById("xpFill"),xpText=document.getElementById("xpText");
 function update(){soulsEl.textContent=souls;xpFill.style.width=Math.min(souls,100)+"%";xpText.textContent="XP "+souls+" / 100";}
 document.getElementById("orb").onclick=()=>{souls+=perTap;update();};
 setInterval(()=>{if(auto>0){souls+=auto;update();}},1000);
-document.querySelectorAll(".buy").forEach(btn=>btn.onclick=()=>{const cost=+btn.dataset.cost;if(souls<cost)return; souls-=cost;
- if(btn.dataset.up=="tap")perTap++;else if(btn.dataset.up=="auto")auto++;update();});
+document.querySelectorAll(".buy").forEach(btn=>btn.onclick=()=>{const c=+btn.dataset.cost;if(souls<c)return;souls-=c;if(btn.dataset.up=="tap")perTap++;else if(btn.dataset.up=="auto")auto++;update();});
 document.getElementById("force").onclick=()=>{souls+=50;update();};
 update();
 </script>

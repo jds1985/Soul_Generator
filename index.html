@@ -2,8 +2,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Soul Reactor v3.5 — Awakening (Vault of Life A–C)</title>
-  <meta name="description" content="Soul Reactor — tap to generate souls. Cinematic particles, wind-chime ambience, sparkle taps, gust ascensions, rainbow XP, evolving orb, and Vault of Life (A–C)." />
+  <title>Soul Reactor v3.6 — Vault & Store Reunited</title>
+  <meta name="description" content="Soul Reactor — tap to generate souls. Cinematic particles, wind-chime ambience, sparkle taps, gust ascensions, rainbow XP, evolving orb, Vault of Life (A–C) and re-added Store panel." />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root{
@@ -27,7 +27,7 @@
 @keyframes rainbow{0%{background-position:0% 50%}100%{background-position:400% 50%}}
 @keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(124,58,237,.25) inset,0 0 16px rgba(212,175,55,.18)}50%{box-shadow:0 0 30px rgba(124,58,237,.35) inset,0 0 28px rgba(212,175,55,.28)}}
 
-.arena{position:relative;width:100%;height:calc(100vh - 254px);display:grid;place-items:center}
+.arena{position:relative;width:100%;height:calc(100vh - 294px);display:grid;place-items:center}
 .pulse{position:absolute;inset:0;pointer-events:none;opacity:0;transform:scale(.9);background:radial-gradient(circle at 50% 50%,var(--pulse-gold),var(--pulse-purple) 35%,transparent 72%);filter:blur(22px);transition:opacity 650ms ease,transform 900ms ease}
 .pulse.show{opacity:.85;transform:scale(1.25)}
 
@@ -44,16 +44,27 @@
 
 .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding-bottom:10px}
 
-/* Vault (slide-up bright) */
+/* Slide-up panels (Vault & Store) */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease}
 .modal-bg.active{opacity:1;pointer-events:all}
-.vault{width:100%;max-width:520px;background:radial-gradient(1000px 800px at 50% 0%, rgba(255,216,109,.6), rgba(106,0,255,.7));border-radius:20px 20px 0 0;border-top:2px solid var(--gold);box-shadow:0 -6px 40px rgba(124,58,237,.45);transform:translateY(100%);transition:transform .35s ease;padding:18px}
-.modal-bg.active .vault{transform:translateY(0)}
-.vault h2{color:#fff;text-align:center;margin:6px 0 8px;text-shadow:0 0 10px rgba(255,255,255,.6)}
+.panel{width:100%;max-width:560px;background:radial-gradient(1000px 800px at 50% 0%, rgba(255,216,109,.65), rgba(106,0,255,.75));border-radius:20px 20px 0 0;border-top:2px solid var(--gold);box-shadow:0 -6px 40px rgba(124,58,237,.45);transform:translateY(100%);transition:transform .35s ease;padding:18px}
+.modal-bg.active .panel{transform:translateY(0)}
+.panel h2{color:#fff;text-align:center;margin:6px 0 8px;text-shadow:0 0 10px rgba(255,255,255,.6)}
+
+/* Vault grid */
 .vault-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .card{height:130px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;box-shadow:0 0 10px rgba(255,255,255,.5)}
 .card.lock{background:#2a2141;color:#6c5c93}
 .card.on{background:linear-gradient(180deg,#ffe877,#c37bff);color:#1a1034;text-shadow:0 0 6px rgba(255,255,255,.6)}
+
+/* Store items */
+.store-list{display:grid;grid-template-columns:1fr;gap:10px}
+.item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:rgba(20,12,36,.4);border:1px solid rgba(255,255,255,.2)}
+.item .meta{flex:1}
+.item .meta .name{font-weight:800}
+.item .meta .sub{font-size:12px;opacity:.9}
+.buy{padding:8px 12px;border:none;border-radius:10px;background:linear-gradient(90deg,var(--gold),var(--purple));color:#fff;font-weight:800;cursor:pointer}
+.icon{width:52px;height:52px;border-radius:10px;overflow:hidden;box-shadow:0 0 12px rgba(255,255,255,.35);background:#1b1230;display:grid;place-items:center}
 
 /* Creature reveal overlay */
 .reveal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9);width:min(85vw,380px);border-radius:16px;padding:14px;background:rgba(255,255,255,.08);backdrop-filter:blur(6px);box-shadow:0 0 22px rgba(255,255,255,.35),0 0 40px rgba(212,175,55,.35);opacity:0;pointer-events:none}
@@ -81,21 +92,45 @@
     <div class="pulse" id="pulse"></div>
     <div class="orb" id="orb" role="button" aria-label="Generate soul energy"></div>
   </main>  <div class="controls">
+    <button class="btn" id="openStore">🛒 Shop</button>
     <button class="btn" id="openVault">🧬 Creatures</button>
     <button class="btn out" id="force">⚡ Force Level-Up</button>
   </div>  <!-- Vault slide-up -->  <div class="modal-bg" id="vaultModal">
-    <div class="vault">
+    <div class="panel">
       <h2>🧬 Vault of Life</h2>
       <div class="vault-grid" id="vaultGrid"></div>
       <button class="btn out" id="closeVault" style="margin-top:10px;width:100%">Close</button>
+    </div>
+  </div>  <!-- Store slide-up -->  <div class="modal-bg" id="storeModal">
+    <div class="panel">
+      <h2>🛒 Reactor Upgrades</h2>
+      <div class="store-list">
+        <div class="item">
+          <div class="icon"><img id="icoAmplifier" alt="Amplifier"/></div>
+          <div class="meta"><div class="name">🪽 Amplifier</div><div class="sub">+1 Souls per Tap</div></div>
+          <button class="buy" data-up="tap" data-cost="100">Buy 100💠</button>
+        </div>
+        <div class="item">
+          <div class="icon"><img id="icoBooster" alt="Booster"/></div>
+          <div class="meta"><div class="name">🔥 Booster</div><div class="sub">+1 Souls / sec</div></div>
+          <button class="buy" data-up="auto" data-cost="250">Buy 250💠</button>
+        </div>
+        <div class="item">
+          <div class="icon"><img id="icoSurge" alt="Surge"/></div>
+          <div class="meta"><div class="name">⚡ Surge</div><div class="sub">x2 Global for 10s</div></div>
+          <button class="buy" data-up="surge" data-cost="300">Buy 300💠</button>
+        </div>
+      </div>
+      <div id="storeMsg" style="text-align:center;margin-top:8px;color:#fff"></div>
+      <button class="btn out" id="closeStore" style="margin-top:10px;width:100%">Close</button>
     </div>
   </div>  <!-- Creature reveal overlay -->  <div class="reveal" id="reveal">
     <div class="name" id="rName"></div>
     <div class="type" id="rType"></div>
     <div class="q" id="rQuote"></div>
-  </div>  <div class="wm-left">v3.5 — Soul Reactor • Awakening</div><script>
+  </div>  <div class="wm-left">v3.6 — Soul Reactor • Vault & Store Reunited</div><script>
 (() => {
-  // Elements
+  // ===== Elements =====
   const orb = document.getElementById('orb');
   const soulsEl = document.getElementById('souls');
   const stageEl = document.getElementById('stage');
@@ -105,12 +140,24 @@
   const openVault = document.getElementById('openVault');
   const vaultModal = document.getElementById('vaultModal');
   const closeVault = document.getElementById('closeVault');
+  const openStore = document.getElementById('openStore');
+  const storeModal = document.getElementById('storeModal');
+  const closeStore = document.getElementById('closeStore');
   const grid = document.getElementById('vaultGrid');
   const forceBtn = document.getElementById('force');
   const soundBtn = document.getElementById('soundBtn');
   const r = { box: document.getElementById('reveal'), name: document.getElementById('rName'), type: document.getElementById('rType'), quote: document.getElementById('rQuote') };
+  const msg = document.getElementById('storeMsg');
 
-  // Stages
+  // ===== Inline icon data (embedded SVG -> data URI) =====
+  const dataWinged = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><radialGradient id="g" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="%23ffd86d"/><stop offset="0.6" stop-color="%23a16dff"/><stop offset="1" stop-color="%23330a66"/></radialGradient></defs><rect width="128" height="128" rx="16" fill="%231b1230"/><g filter="url(#f)"><circle cx="64" cy="64" r="26" fill="url(%23g)"/></g><path d="M96 56c-8 2-14 9-18 18 9 2 18-1 24-8 4-5 1-12-6-10zM32 56c8 2 14 9 18 18-9 2-18-1-24-8-4-5-1-12 6-10z" fill="%23ffd86d" opacity=".9"/></svg>';
+  const dataFlame  = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="16" fill="%231b1230"/><g><path d="M64 20c12 16 4 24 4 30s8 10 8 20-8 22-20 22-20-10-20-20 8-14 14-20 2-12 14-32z" fill="%2300e0ff"/><circle cx="64" cy="88" r="16" fill="%2346ffb6"/></g></svg>';
+  const dataBolt   = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="16" fill="%231b1230"/><polygon points="72,12 52,68 80,68 56,116 100,54 72,54" fill="%2300d0ff"/><circle cx="64" cy="96" r="18" fill="%23a06dff"/></svg>';
+  document.getElementById('icoAmplifier').src = dataWinged; // 🪽 Amplifier
+  document.getElementById('icoBooster').src   = dataFlame;  // 🔥 Booster
+  document.getElementById('icoSurge').src     = dataBolt;   // ⚡ Surge
+
+  // ===== Stages =====
   const STAGES = [
     { name:'Ember', threshold:0, colors:{ inner:'#fff6e0', mid:'#e1c25b', outer:'rgba(124,58,237,.85)', pg:'rgba(212,175,55,.28)', pp:'rgba(124,58,237,.22)' } },
     { name:'Lumen', threshold:100, colors:{ inner:'#ffffff', mid:'#f1db87', outer:'rgba(168,120,255,.9)', pg:'rgba(230,200,100,.32)', pp:'rgba(150,95,255,.26)' } },
@@ -119,17 +166,19 @@
     { name:'Ascendant', threshold:100000, colors:{ inner:'#ffffff', mid:'#fff3b0', outer:'rgba(255,255,255,.9)', pg:'rgba(255,230,120,.36)', pp:'rgba(190,150,255,.32)' } },
   ];
 
+  // ===== Creatures =====
   const CREATURES = [
     { id:'A', name:'Ameego', type:'Ameba', quote:'I absorb all criticism!' },
     { id:'B', name:'Bubo', type:'Beetle', quote:'Error 404: Chill not found.' },
     { id:'C', name:'Crumbly', type:'Crustacean', quote:"Don't touch my house — it’s half dessert!" },
   ];
 
-  // State
+  // ===== State =====
   const state = {
     souls: +(localStorage.getItem('souls')||0), perTap: +(localStorage.getItem('perTap')||1), mult: +(localStorage.getItem('mult')||1),
     auto: +(localStorage.getItem('auto')||0), sound: (localStorage.getItem('sound')||'off'),
     unlocked: JSON.parse(localStorage.getItem('vaultUnlocks')||'[]'),
+    surgeUntil: +(localStorage.getItem('surgeUntil')||0),
   };
 
   function save(){
@@ -139,6 +188,7 @@
     localStorage.setItem('auto', state.auto);
     localStorage.setItem('sound', state.sound);
     localStorage.setItem('vaultUnlocks', JSON.stringify(state.unlocked));
+    localStorage.setItem('surgeUntil', state.surgeUntil);
   }
 
   function fmt(n){ if(n>=1e9) return (n/1e9).toFixed(2)+'B'; if(n>=1e6) return (n/1e6).toFixed(2)+'M'; if(n>=1e3) return (n/1e3).toFixed(1)+'K'; return Math.floor(n).toString(); }
@@ -185,13 +235,26 @@
   function setSound(on){ state.sound = on?'on':'off'; soundBtn.textContent = on?'🔊 Sound On':'🔇 Sound Off'; save(); if(on){ ensureAudio(); } else { if(ctx) ctx.suspend(); } }
 
   // Interactions
-  function tap(e){ if(state.sound==='on') ensureAudio(); const x=(e.clientX||(e.touches&&e.touches[0].clientX)||window.innerWidth/2); const y=(e.clientY||(e.touches&&e.touches[0].clientY)||window.innerHeight/2); burst(x,y); pulseWave(); orb.style.transform='scale(.985)'; setTimeout(()=>orb.style.transform='scale(1)',90); state.souls += state.perTap*state.mult; playSparkle(); updateUI(); }
+  function tap(e){ if(state.sound==='on') ensureAudio(); const x=(e.clientX||(e.touches&&e.touches[0].clientX)||window.innerWidth/2); const y=(e.clientY||(e.touches&&e.touches[0].clientY)||window.innerHeight/2); burst(x,y); pulseWave(); orb.style.transform='scale(.985)'; setTimeout(()=>orb.style.transform='scale(1)',90); const multBoost = (Date.now()<state.surgeUntil)?2:1; state.souls += state.perTap*state.mult*multBoost; playSparkle(); updateUI(); }
   orb.addEventListener('click',tap); orb.addEventListener('touchstart',ev=>tap(ev.touches[0]),{passive:true});
 
   // Vault
   function renderVault(){ grid.innerHTML=''; CREATURES.forEach(c=>{ const d=document.createElement('div'); d.className='card '+(state.unlocked.includes(c.id)?'on':'lock'); d.innerHTML = state.unlocked.includes(c.id)?`<div><b>${c.name}</b><div style="font-size:12px">${c.type}</div><div style="font-size:11px;opacity:.8">“${c.quote}”</div></div>`:`<div style="font-size:34px;opacity:.7">${c.id}</div>`; grid.appendChild(d); }); }
-  openVault.onclick=()=>{ vaultModal.classList.add('active'); renderVault(); if(state.sound==='on') ensureAudio(); };
+  openVault.onclick=()=>{ storeModal.classList.remove('active'); vaultModal.classList.add('active'); renderVault(); if(state.sound==='on') ensureAudio(); };
   closeVault.onclick=()=>vaultModal.classList.remove('active');
+
+  // Store
+  openStore.onclick=()=>{ vaultModal.classList.remove('active'); storeModal.classList.add('active'); if(state.sound==='on') ensureAudio(); };
+  closeStore.onclick=()=>storeModal.classList.remove('active');
+  document.querySelectorAll('.buy').forEach(btn=>{
+    btn.onclick=()=>{
+      const cost=+btn.dataset.cost; const up=btn.dataset.up; if(state.souls < cost){ msg.textContent='Not enough souls.'; return; }
+      state.souls -= cost; if(up==='tap'){ state.perTap += 1; msg.textContent='Amplifier purchased: +1 / tap'; }
+      else if(up==='auto'){ state.auto += 1; msg.textContent='Booster purchased: +1 / sec'; }
+      else if(up==='surge'){ state.surgeUntil = Date.now() + 10000; msg.textContent='Surge active: x2 for 10s!'; }
+      updateUI();
+    };
+  });
 
   // Reveal creature at level-up
   function revealCreature(idx){ const n = Math.min(idx, CREATURES.length); const c = CREATURES[n-1]; if(!c) return; if(!state.unlocked.includes(c.id)) state.unlocked.push(c.id); save(); r.name.textContent = `${c.name}`; r.type.textContent = `${c.type} Type`; r.quote.textContent = `“${c.quote}”`; r.box.classList.add('show'); setTimeout(()=>{ r.box.classList.remove('show'); renderVault(); }, 2500); }
@@ -202,12 +265,11 @@
   // Sound toggle
   soundBtn.onclick=()=> setSound(state.sound!=='on');
 
-  // Auto generation (if any)
-  setInterval(()=>{ if(state.auto>0){ state.souls += state.auto*state.mult; updateUI(); } }, 1000);
+  // Auto generation
+  setInterval(()=>{ const multBoost=(Date.now()<state.surgeUntil)?2:1; if(state.auto>0){ state.souls += state.auto*state.mult*multBoost; updateUI(); } }, 1000);
 
   // Initial draw
   updateUI(); setSound(state.sound==='on');
-  // Start audio only after first interaction for mobile policy; also resume if already on
   ['click','touchstart'].forEach(evt=>document.addEventListener(evt,()=>ensureAudio(),{once:true,passive:true}));
 })();
 </script></body>

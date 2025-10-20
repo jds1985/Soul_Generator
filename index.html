@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Soul Reactor v4.1 — Holographic Pulse + Sound Fix</title>
+<title>Soul Reactor v4.2 — Full Reunite Build</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
 <style>
 :root {
@@ -217,6 +217,20 @@ footer {
   text-align: center;
   padding: 4px;
 }
+
+.card {
+  height: 150px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg,#5e00a8,#d9a406);
+  box-shadow: 0 0 16px rgba(255,255,255,.4);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.card img {width:80px;height:80px;border-radius:8px;object-fit:cover;}
 </style>
 </head>
 <body>
@@ -241,8 +255,30 @@ footer {
   <button id="force" class="btn out">⚡ Force Level-Up</button>
 </div>
 
+<!-- STORE MODAL -->
+<div id="storeModal" class="modal-bg">
+  <div class="panel">
+    <h2 style="text-align:center;">🛒 Reactor Upgrades</h2>
+    <div class="card"><img src="assets/amplifier.png" alt="Amplifier"><div>Amplifier — +1 Souls per Tap</div></div>
+    <div class="card"><img src="assets/booster.png" alt="Booster"><div>Booster — +1 Souls/sec</div></div>
+    <div class="card"><img src="assets/surge.png" alt="Surge"><div>Surge — x2 Global for 10s</div></div>
+    <button id="closeStore" class="btn out" style="width:100%;margin-top:10px;">Close</button>
+  </div>
+</div>
+
+<!-- CREATURES MODAL -->
+<div id="vaultModal" class="modal-bg">
+  <div class="panel">
+    <h2 style="text-align:center;">🧬 Vault of Life</h2>
+    <div class="card"><img src="assets/creatureA.png" alt="A"><div>Ameego — The Ameba</div></div>
+    <div class="card"><img src="assets/creatureB.png" alt="B"><div>Blip — The Blob</div></div>
+    <div class="card"><img src="assets/creatureC.png" alt="C"><div>Crumbit — The Crusty</div></div>
+    <button id="closeVault" class="btn out" style="width:100%;margin-top:10px;">Close</button>
+  </div>
+</div>
+
 <button id="resetBtn">♻ Reset Images</button>
-<footer>v4.1 — Soul Reactor: Holographic Pulse + Sound Fix</footer>
+<footer>v4.2 — Soul Reactor: Full Reunite Build</footer>
 
 <script>
 const LS = window.localStorage;
@@ -284,6 +320,14 @@ orb.addEventListener("click", ()=>{
 setInterval(()=>{ if(auto>0){souls+=auto;update();}},1000);
 document.getElementById("force").onclick=()=>{souls+=50;update();};
 update();
+
+// Drawer controls
+const storeModal=document.getElementById(\"storeModal\"); 
+const vaultModal=document.getElementById(\"vaultModal\");
+document.getElementById(\"openStore\").onclick=()=>{vaultModal.classList.remove(\"active\");storeModal.classList.add(\"active\");};
+document.getElementById(\"openVault\").onclick=()=>{storeModal.classList.remove(\"active\");vaultModal.classList.add(\"active\");};
+document.getElementById(\"closeStore\").onclick=()=>storeModal.classList.remove(\"active\");
+document.getElementById(\"closeVault\").onclick=()=>vaultModal.classList.remove(\"active\");
 </script>
 </body>
 </html>

@@ -1,8 +1,9 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Soul Reactor v4.0 — Holographic Pulse Edition</title>
+<title>Soul Reactor v4.1 — Holographic Pulse + Sound Fix</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
 <style>
 :root {
@@ -11,82 +12,278 @@
   --bg0: #0b0613;
   --bg1: #120a21;
   --rainbow: linear-gradient(90deg,#ff0080,#ff8c00,#ffe600,#21d07a,#00b3ff,#7c3aed,#ff0080);
-}html, body { height: 100%; width: 100%; margin: 0; padding: 0; overscroll-behavior: none; background-color: #0b0613; viewport-fit: cover; }
+}
 
-body { display: flex; flex-direction: column; justify-content: space-between; min-height: 100vh; padding-bottom: env(safe-area-inset-bottom); background: radial-gradient(circle at 50% 30%, rgba(124,58,237,.1), transparent 60%), linear-gradient(180deg, var(--bg1), var(--bg0)); color: #fff; font-family: Orbitron, sans-serif; overflow: hidden; }
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+  background-color: #0b0613;
+  viewport-fit: cover;
+}
 
-header { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 8px; flex-wrap: wrap; }
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
+  background: radial-gradient(circle at 50% 30%, rgba(124,58,237,.1), transparent 60%),
+              linear-gradient(180deg, var(--bg1), var(--bg0));
+  color: #fff;
+  font-family: Orbitron, sans-serif;
+  overflow-y: auto;
+}
 
-.pill { padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.25); }
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  flex-wrap: wrap;
+}
 
-.btn { background: linear-gradient(90deg,var(--gold),var(--purple)); border: none; color: #fff; border-radius: 12px; padding: 8px 14px; cursor: pointer; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+.pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.25);
+}
 
-.btn.out { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+.btn {
+  background: linear-gradient(90deg,var(--gold),var(--purple));
+  border: none;
+  color: #fff;
+  border-radius: 12px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0,0,0,.4);
+}
 
-.xp-wrap { width: min(90vw,960px); margin: 8px auto; }
+.btn.out {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
 
-.xp { height: 28px; border-radius: 999px; position: relative; overflow: hidden; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); }
+.xp-wrap {
+  width: min(90vw,960px);
+  margin: 8px auto;
+}
 
-.xp::before { content: ""; position: absolute; inset: 0; background: var(--rainbow); background-size: 400% 100%; filter: blur(6px); opacity: .6; animation: rainbow 10s linear infinite; }
+.xp {
+  height: 28px;
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.15);
+}
 
-.xp-fill { position: absolute; inset: 0; width: 0; background: linear-gradient(90deg,var(--gold),var(--purple)); transition: width .4s ease; }
+.xp::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--rainbow);
+  background-size: 400% 100%;
+  filter: blur(6px);
+  opacity: .6;
+  animation: rainbow 10s linear infinite;
+}
 
-.xp-text { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; }
+.xp-fill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: linear-gradient(90deg,var(--gold),var(--purple));
+  transition: width .4s ease;
+}
 
-@keyframes rainbow { 0% {background-position: 0 0;} 100% {background-position: 400% 0;} }
+.xp-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+}
 
-.arena { flex: 1; display: grid; place-items: center; position: relative; }
+@keyframes rainbow {
+  0% {background-position: 0 0;}
+  100% {background-position: 400% 0;}
+}
 
-.orb { width: min(40vh,300px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 50% 45%, #fff6e0, #e1c25b 30%, rgba(124,58,237,.85) 65%, rgba(10,5,20,1) 85%); box-shadow: 0 0 60px rgba(124,58,237,.6), 0 0 140px rgba(212,175,55,.45); animation: throb 3s ease-in-out infinite; cursor: pointer; }
+.arena {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
 
-@keyframes throb { 0%,100% {transform: scale(1)} 50% {transform: scale(1.03)} }
+.orb {
+  width: min(40vh,300px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #fff6e0, #e1c25b 30%, rgba(124,58,237,.85) 65%, rgba(10,5,20,1) 85%);
+  box-shadow: 0 0 60px rgba(124,58,237,.6), 0 0 140px rgba(212,175,55,.45);
+  animation: throb 3s ease-in-out infinite;
+  cursor: pointer;
+}
 
-.controls { display: flex; justify-content: center; gap: 12px; padding: 12px; }
+@keyframes throb {
+  0%,100% {transform: scale(1)}
+  50% {transform: scale(1.03)}
+}
 
-.modal-bg { position: fixed; inset: 0; display: flex; align-items: flex-end; justify-content: center; background: rgba(0,0,0,.6); opacity: 0; pointer-events: none; transition: opacity .3s ease; z-index: 20; }
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px;
+}
 
-.modal-bg.active { opacity: 1; pointer-events: all; }
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0,0,0,.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+  z-index: 20;
+}
 
-.panel { width: 100%; max-width: 560px; max-height: calc(100vh - env(safe-area-inset-top) - 60px); overflow-y: auto; border-radius: 20px 20px 0 0; background: radial-gradient(900px 700px at 50% 0%, rgba(255,216,109,.65), rgba(106,0,255,.75)); border-top: 2px solid var(--gold); box-shadow: 0 -10px 50px rgba(124,58,237,.55), 0 0 80px rgba(255,215,0,.25); transform: translateY(100%); transition: transform .45s cubic-bezier(.25,.8,.25,1); padding: 18px; position: relative; }
+.modal-bg.active {
+  opacity: 1;
+  pointer-events: all;
+}
 
-.modal-bg.active .panel { transform: translateY(0); }
+.panel {
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - env(safe-area-inset-top) - 60px);
+  overflow-y: auto;
+  border-radius: 20px 20px 0 0;
+  background: radial-gradient(900px 700px at 50% 0%, rgba(255,216,109,.65), rgba(106,0,255,.75));
+  border-top: 2px solid var(--gold);
+  box-shadow: 0 -10px 50px rgba(124,58,237,.55), 0 0 80px rgba(255,215,0,.25);
+  transform: translateY(100%);
+  transition: transform .45s cubic-bezier(.25,.8,.25,1);
+  padding: 18px;
+  position: relative;
+}
 
-.panel::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.2), transparent 70%); filter: blur(40px); opacity: .6; animation: holoPulse 3s ease-in-out infinite; }
+.modal-bg.active .panel {
+  transform: translateY(0);
+}
 
-@keyframes holoPulse { 0%,100% {opacity: .4; transform: scale(1);} 50% {opacity: .8; transform: scale(1.05);} }
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.2), transparent 70%);
+  filter: blur(40px);
+  opacity: .6;
+  animation: holoPulse 3s ease-in-out infinite;
+}
 
-#resetBtn { position: fixed; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); padding: 8px 12px; border-radius: 10px; background: linear-gradient(90deg,#ffd86d,#7c3aed); border: none; color: #fff; cursor: pointer; font-weight: 700; z-index: 30; }
+@keyframes holoPulse {
+  0%,100% {opacity: .4; transform: scale(1);}
+  50% {opacity: .8; transform: scale(1.05);}
+}
 
-footer { font-size: 11px; opacity: .6; text-align: center; padding: 4px; } </style>
+#resetBtn {
+  position: fixed;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: linear-gradient(90deg,#ffd86d,#7c3aed);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  z-index: 30;
+}
 
+footer {
+  font-size: 11px;
+  opacity: .6;
+  text-align: center;
+  padding: 4px;
+}
+</style>
 </head>
 <body>
 <header>
   <div class="pill">Souls: <span id="souls">0</span></div>
   <div class="pill">Stage: <span id="stage">Ember</span></div>
   <button id="soundBtn" class="btn out">🔇 Sound Off</button>
-</header><div class="xp-wrap">
+</header>
+
+<div class="xp-wrap">
   <div class="xp">
     <div id="xpFill" class="xp-fill"></div>
     <div id="xpText" class="xp-text">XP 0 / 100</div>
   </div>
-</div><div class="arena"><div id="orb" class="orb"></div></div><div class="controls">
+</div>
+
+<div class="arena"><div id="orb" class="orb"></div></div>
+
+<div class="controls">
   <button id="openStore" class="btn">🛒 Shop</button>
   <button id="openVault" class="btn">🧬 Creatures</button>
   <button id="force" class="btn out">⚡ Force Level-Up</button>
-</div><button id="resetBtn">♻ Reset Images</button>
+</div>
 
-<footer>v4.0 — Soul Reactor: Holographic Pulse Edition</footer><script>
+<button id="resetBtn">♻ Reset Images</button>
+<footer>v4.1 — Soul Reactor: Holographic Pulse + Sound Fix</footer>
+
+<script>
 const LS = window.localStorage;
 function resetAll(){if(confirm("Reset all progress?")){LS.clear();location.reload();}}
-document.getElementById("resetBtn").onclick=resetAll;
+document.getElementById("resetBtn").onclick = resetAll;
 
 let souls=0, perTap=1, auto=0;
-const soulsEl=document.getElementById("souls"), xpFill=document.getElementById("xpFill"), xpText=document.getElementById("xpText");
-function update(){soulsEl.textContent=souls;xpFill.style.width=Math.min(souls,100)+"%";xpText.textContent="XP "+souls+" / 100";}
-document.getElementById("orb").onclick=()=>{souls+=perTap;update();};
-setInterval(()=>{if(auto>0){souls+=auto;update();}},1000);
+const soulsEl=document.getElementById("souls"),
+      xpFill=document.getElementById("xpFill"),
+      xpText=document.getElementById("xpText"),
+      orb=document.getElementById("orb"),
+      soundBtn=document.getElementById("soundBtn");
+
+let soundOn = false;
+const tapSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_03b3b0b6b4.mp3?filename=click-124467.mp3");
+tapSound.volume = 0.5;
+
+soundBtn.onclick = () => {
+  soundOn = !soundOn;
+  soundBtn.textContent = soundOn ? "🔊 Sound On" : "🔇 Sound Off";
+  soundBtn.classList.toggle("out", !soundOn);
+};
+
+function update(){
+  soulsEl.textContent = souls;
+  xpFill.style.width = Math.min(souls,100)+"%";
+  xpText.textContent = "XP "+souls+" / 100";
+}
+
+orb.addEventListener("click", ()=>{
+  souls += perTap;
+  update();
+  if (soundOn) {
+    tapSound.currentTime = 0;
+    tapSound.play();
+  }
+});
+
+setInterval(()=>{ if(auto>0){souls+=auto;update();}},1000);
 document.getElementById("force").onclick=()=>{souls+=50;update();};
 update();
-</script></body>
+</script>
+</body>
 </html>

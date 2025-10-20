@@ -3,44 +3,33 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Soul Reactor v4.4 — Stable Hotfix</title>
+<title>Soul Reactor v4.5 — Sound + Particles Fix</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-:root {
-  --gold:#d4af37; --purple:#7c3aed;
-  --bg0:#0b0613; --bg1:#120a21;
-  --rainbow:linear-gradient(90deg,#ff0080,#ff8c00,#ffe600,#21d07a,#00b3ff,#7c3aed,#ff0080);
-}
-html,body{height:100%;width:100%;margin:0;padding:0;viewport-fit:cover;overscroll-behavior:none;background:#0b0613;color:#fff;font-family:Orbitron,sans-serif;}
-body{display:flex;flex-direction:column;justify-content:space-between;min-height:100vh;padding-bottom:calc(env(safe-area-inset-bottom) + 20px);
-background:radial-gradient(circle at 50% 30%,rgba(124,58,237,.1),transparent 60%),linear-gradient(180deg,var(--bg1),var(--bg0));overflow-y:auto;}
-header{display:flex;justify-content:center;align-items:center;gap:10px;padding:8px;flex-wrap:wrap;}
+:root{--gold:#d4af37;--purple:#7c3aed;--bg0:#0b0613;--bg1:#120a21;}
+html,body{height:100%;margin:0;background:#0b0613;color:#fff;font-family:Orbitron,sans-serif;}
+body{display:flex;flex-direction:column;justify-content:space-between;min-height:100vh;overflow:hidden;background:linear-gradient(180deg,var(--bg1),var(--bg0));}
+header{display:flex;justify-content:center;gap:10px;padding:8px;flex-wrap:wrap;}
 .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);}
 .btn{background:linear-gradient(90deg,var(--gold),var(--purple));border:none;color:#fff;border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.4);}
 .btn.out{background:transparent;border:1px solid var(--gold);color:var(--gold);}
 .xp-wrap{width:min(90vw,960px);margin:8px auto;}
-.xp{height:28px;border-radius:999px;position:relative;overflow:hidden;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);}
-.xp::before{content:"";position:absolute;inset:0;background:var(--rainbow);background-size:400% 100%;filter:blur(6px);opacity:.6;animation:rainbow 10s linear infinite;}
-.xp-fill{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--gold),var(--purple));transition:width .4s ease;}
-.xp-text{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;}
-@keyframes rainbow{0%{background-position:0 0}100%{background-position:400% 0}}
-.arena{flex:1;display:grid;place-items:center;position:relative;}
+.xp{height:24px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.1);}
+.xp-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--purple));transition:width .3s;}
+.arena{flex:1;display:grid;place-items:center;position:relative;overflow:hidden;}
 .orb{width:min(40vh,300px);aspect-ratio:1;border-radius:50%;
 background:radial-gradient(circle at 50% 45%,#fff6e0,#e1c25b 30%,rgba(124,58,237,.85) 65%,rgba(10,5,20,1) 85%);
-box-shadow:0 0 60px rgba(124,58,237,.6),0 0 140px rgba(212,175,55,.45);animation:throb 3s ease-in-out infinite;cursor:pointer;}
+box-shadow:0 0 60px rgba(124,58,237,.6),0 0 140px rgba(212,175,55,.45);
+animation:throb 3s ease-in-out infinite;cursor:pointer;position:relative;z-index:5;}
 @keyframes throb{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+canvas#particles{position:absolute;inset:0;pointer-events:none;z-index:1;}
 .controls{display:flex;justify-content:center;gap:12px;padding:12px;}
-.modal-bg{position:fixed;inset:0;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);
-opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:20;}
+.modal-bg{position:fixed;inset:0;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:.3s;}
 .modal-bg.active{opacity:1;pointer-events:auto;}
-.panel{width:100%;max-width:560px;max-height:calc(100vh - env(safe-area-inset-top) - 60px);overflow-y:auto;border-radius:20px 20px 0 0;
-background:radial-gradient(900px 700px at 50% 0%,rgba(255,216,109,.65),rgba(106,0,255,.75));border-top:2px solid var(--gold);
-box-shadow:0 -10px 50px rgba(124,58,237,.55),0 0 80px rgba(255,215,0,.25);transform:translateY(100%);
-transition:transform .45s cubic-bezier(.25,.8,.25,1);padding:18px;position:relative;}
+.panel{width:100%;max-width:560px;border-radius:20px 20px 0 0;background:radial-gradient(900px 700px at 50% 0%,rgba(255,216,109,.65),rgba(106,0,255,.75));padding:18px;transform:translateY(100%);transition:.4s;}
 .modal-bg.active .panel{transform:translateY(0);}
-.list{display:grid;gap:10px;}
-.row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:rgba(20,12,36,.45);border:1px solid rgba(255,255,255,.25);}
-.icon{width:72px;height:72px;border-radius:12px;overflow:hidden;background:#0f0a1d;display:grid;place-items:center;box-shadow:0 0 14px rgba(255,255,255,.35),0 0 20px rgba(124,58,237,.28);}
+.row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:rgba(20,12,36,.45);}
+.icon{width:72px;height:72px;border-radius:12px;overflow:hidden;background:#0f0a1d;display:grid;place-items:center;}
 .icon img{width:100%;height:100%;object-fit:contain;}
 .meta{flex:1}.name{font-weight:800}.sub{font-size:12px;opacity:.85}
 #resetBtn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));padding:8px 12px;border-radius:10px;
@@ -54,80 +43,72 @@ footer{font-size:11px;opacity:.6;text-align:center;padding:4px;}
   <div class="pill">Stage: <span id="stage">Ember</span></div>
   <button id="soundBtn" class="btn out">🔇 Sound Off</button>
 </header>
-
-<div class="xp-wrap">
-  <div class="xp">
-    <div id="xpFill" class="xp-fill"></div>
-    <div id="xpText" class="xp-text">XP 0 / 100</div>
-  </div>
+<div class="xp-wrap"><div class="xp"><div id="xpFill" class="xp-fill"></div></div></div>
+<div class="arena">
+  <canvas id="particles"></canvas>
+  <div id="orb" class="orb"></div>
 </div>
-
-<div class="arena"><div id="orb" class="orb"></div></div>
-
 <div class="controls">
   <button id="openStore" class="btn">🛒 Shop</button>
   <button id="openVault" class="btn">🧬 Creatures</button>
   <button id="force" class="btn out">⚡ Force Level-Up</button>
 </div>
 
-<!-- STORE -->
-<div id="storeModal" class="modal-bg">
-  <div class="panel">
-    <h2 style="text-align:center;margin:6px 0 10px;">🛒 Reactor Upgrades</h2>
-    <div class="list">
-      <div class="row"><div class="icon"><img src="assets/amplifier.png" alt="Amplifier"></div><div class="meta"><div class="name">Amplifier</div><div class="sub">+1 Souls per Tap</div></div></div>
-      <div class="row"><div class="icon"><img src="assets/booster.png" alt="Booster"></div><div class="meta"><div class="name">Booster</div><div class="sub">+1 Souls/sec</div></div></div>
-      <div class="row"><div class="icon"><img src="assets/surge.png" alt="Surge"></div><div class="meta"><div class="name">Surge</div><div class="sub">x2 Global for 10s</div></div></div>
-    </div>
-    <button id="closeStore" class="btn out" style="width:100%;margin-top:10px;">Close</button>
-  </div>
-</div>
-
-<!-- CREATURES -->
-<div id="vaultModal" class="modal-bg">
-  <div class="panel">
-    <h2 style="text-align:center;margin:6px 0 10px;">🧬 Vault of Life</h2>
-    <div class="list">
-      <div class="row"><div class="icon"><img src="assets/creatureA.png" alt="A"></div><div class="meta"><div class="name">A-Class</div><div class="sub">Prototype creature</div></div></div>
-      <div class="row"><div class="icon"><img src="assets/creatureB.png" alt="B"></div><div class="meta"><div class="name">B-Class</div><div class="sub">Prototype creature</div></div></div>
-      <div class="row"><div class="icon"><img src="assets/creatureC.png" alt="C"></div><div class="meta"><div class="name">C-Class</div><div class="sub">Prototype creature</div></div></div>
-    </div>
-    <button id="closeVault" class="btn out" style="width:100%;margin-top:10px;">Close</button>
-  </div>
-</div>
+<!-- Modals -->
+<div id="storeModal" class="modal-bg"><div class="panel"><h2>🛒 Reactor Upgrades</h2><button id="closeStore" class="btn out" style="width:100%;">Close</button></div></div>
+<div id="vaultModal" class="modal-bg"><div class="panel"><h2>🧬 Vault of Life</h2><button id="closeVault" class="btn out" style="width:100%;">Close</button></div></div>
 
 <button id="resetBtn">♻ Reset</button>
-<footer>v4.4 — Soul Reactor Hotfix</footer>
+<footer>v4.5 — Sound and Particles Restored</footer>
 
 <script>
-let souls=0, perTap=1, auto=0;
-const soulsEl=document.getElementById("souls");
-const xpFill=document.getElementById("xpFill");
-const xpText=document.getElementById("xpText");
-const orb=document.getElementById("orb");
-function update(){soulsEl.textContent=souls;xpFill.style.width=Math.min(souls,100)+"%";xpText.textContent="XP "+souls+" / 100";}
-orb.addEventListener("click",()=>{souls+=perTap;update();if(soundOn){tapSound.currentTime=0;tapSound.play();}});
-setInterval(()=>{if(auto>0){souls+=auto;update();}},1000);
-document.getElementById("force").onclick=()=>{souls+=50;update();};
-
-// --- SOUND FIX ---
-let soundOn=false;
-const soundBtn=document.getElementById("soundBtn");
+let souls=0, perTap=1, auto=0, soundOn=false, firstTap=false;
+const soulsEl=document.getElementById("souls"), xpFill=document.getElementById("xpFill"), orb=document.getElementById("orb");
+function update(){soulsEl.textContent=souls;xpFill.style.width=Math.min(souls,100)+"%";}
 const tapSound=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_03b3b0b6b4.mp3?filename=click-124467.mp3");
-tapSound.volume=0.4;
-// unlock sound context on first user gesture
-document.body.addEventListener("touchstart",()=>tapSound.play().then(()=>tapSound.pause()),{once:true});
+tapSound.volume=0.5;
+const soundBtn=document.getElementById("soundBtn");
 soundBtn.onclick=()=>{soundOn=!soundOn;soundBtn.textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";soundBtn.classList.toggle("out",!soundOn);};
 
-// --- MODALS FIX ---
-const storeModal=document.getElementById("storeModal");
-const vaultModal=document.getElementById("vaultModal");
+function playClick(){
+  if(!firstTap){firstTap=true;tapSound.play().then(()=>tapSound.pause());} // unlock
+  if(soundOn){tapSound.currentTime=0;tapSound.play();}
+}
+
+// Particles
+const canvas=document.getElementById("particles"),ctx=canvas.getContext("2d");
+let particles=[];
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener("resize",resize);resize();
+function spawn(x,y){for(let i=0;i<10;i++){particles.push({x,y,r:3+Math.random()*3,dx:(Math.random()-0.5)*4,dy:(Math.random()-0.5)*4,life:1});}}
+function render(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ particles.forEach(p=>{
+   p.x+=p.dx;p.y+=p.dy;p.life-=0.02;
+   ctx.beginPath();ctx.fillStyle=`hsla(${260+Math.random()*40},100%,70%,${p.life})`;
+   ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+ });
+ particles=particles.filter(p=>p.life>0);
+ requestAnimationFrame(render);
+}
+render();
+
+orb.addEventListener("click",e=>{
+  const rect=canvas.getBoundingClientRect();
+  spawn(e.clientX-rect.left,e.clientY-rect.top);
+  playClick();
+  souls+=perTap;update();
+});
+setInterval(()=>{if(auto>0){souls+=auto;update();}},1000);
+
+document.getElementById("force").onclick=()=>{souls+=50;update();};
+
+const storeModal=document.getElementById("storeModal"),vaultModal=document.getElementById("vaultModal");
 document.getElementById("openStore").onclick=()=>{vaultModal.classList.remove("active");storeModal.classList.add("active");};
 document.getElementById("openVault").onclick=()=>{storeModal.classList.remove("active");vaultModal.classList.add("active");};
 document.getElementById("closeStore").onclick=()=>storeModal.classList.remove("active");
 document.getElementById("closeVault").onclick=()=>vaultModal.classList.remove("active");
 
-// --- RESET ---
 document.getElementById("resetBtn").onclick=()=>{souls=0;perTap=1;auto=0;update();};
 update();
 </script>

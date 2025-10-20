@@ -3,94 +3,73 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Soul Reactor v4.6 — Stable Layout + Sound</title>
+<title>Soul Reactor v4.7 — Final Stable</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --gold:#d4af37; --purple:#7c3aed;
-  --bg0:#0b0613; --bg1:#120a21;
+  --gold:#d4af37;--purple:#7c3aed;
+  --bg0:#0b0613;--bg1:#120a21;
   --rainbow:linear-gradient(90deg,#ff0080,#ff8c00,#ffe600,#21d07a,#00b3ff,#7c3aed,#ff0080);
 }
 
-/* full-screen + safe areas */
 html,body{
-  height:100%; width:100%;
-  margin:0; padding:0;
+  height:100%;
+  margin:0;
   background:#0b0613;
   color:#fff;
   font-family:Orbitron,sans-serif;
-  overscroll-behavior:none;
   viewport-fit:cover;
+  overscroll-behavior:none;
 }
 body{
-  display:flex; flex-direction:column;
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 50% 30%, rgba(124,58,237,.10), transparent 60%),
-    linear-gradient(180deg, var(--bg1), var(--bg0));
-  /* ✅ allow slight scroll so bottom buttons are always reachable */
-  overflow-y:auto;
-  /* ✅ keep controls above Android/iOS bars */
-  padding-bottom:calc(env(safe-area-inset-bottom) + 28px);
+  display:flex;flex-direction:column;
+  background:linear-gradient(180deg,var(--bg1),var(--bg0));
+  overflow:hidden;
 }
 
+/* header */
 header{display:flex;justify-content:center;align-items:center;gap:10px;padding:8px;flex-wrap:wrap;}
 .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);}
 .btn{background:linear-gradient(90deg,var(--gold),var(--purple));border:none;color:#fff;border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.4);}
 .btn.out{background:transparent;border:1px solid var(--gold);color:var(--gold);}
 
-.xp-wrap{width:min(90vw,960px);margin:8px auto;}
-.xp{height:28px;border-radius:999px;position:relative;overflow:hidden;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);}
-.xp::before{content:"";position:absolute;inset:0;background:var(--rainbow);background-size:400% 100%;filter:blur(6px);opacity:.6;animation:rainbow 10s linear infinite;}
-.xp-fill{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--gold),var(--purple));transition:width .35s ease;}
-.xp-text{position:absolute;inset:0;display:grid;place-items:center;font-size:12px}
-@keyframes rainbow{0%{background-position:0 0}100%{background-position:400% 0}}
+/* XP bar */
+.xp-wrap{width:90%;margin:8px auto;}
+.xp{height:22px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);position:relative;}
+.xp-fill{position:absolute;left:0;top:0;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--purple));transition:width .3s;}
+.xp-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;}
 
-.arena{flex:1;display:grid;place-items:center;position:relative;}
-.orb{
-  width:min(40vh,300px);aspect-ratio:1;border-radius:50%;
-  background:radial-gradient(circle at 50% 45%, #fff6e0, #e1c25b 30%, rgba(124,58,237,.85) 65%, rgba(10,5,20,1) 85%);
-  box-shadow:0 0 60px rgba(124,58,237,.6),0 0 140px rgba(212,175,55,.45);
-  animation:throb 3s ease-in-out infinite; cursor:pointer;
-}
+/* orb */
+.arena{flex:1;display:flex;align-items:center;justify-content:center;position:relative;}
+.orb{width:min(45vh,320px);aspect-ratio:1;border-radius:50%;
+background:radial-gradient(circle at 50% 45%,#fff6e0,#e1c25b 30%,rgba(124,58,237,.85) 65%,rgba(10,5,20,1) 85%);
+box-shadow:0 0 60px rgba(124,58,237,.6),0 0 140px rgba(212,175,55,.45);
+animation:throb 3s ease-in-out infinite;cursor:pointer;}
 @keyframes throb{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
 
+/* bottom controls */
 .controls{
-  display:flex;justify-content:center;gap:12px;padding:12px;
-  /* ✅ extra margin so buttons clear the bottom bar visually */
-  margin-bottom:calc(env(safe-area-inset-bottom) + 6px);
+  display:flex;justify-content:center;gap:10px;padding:10px;
+  background:rgba(10,5,20,.9);
+  border-top:1px solid rgba(255,255,255,.1);
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  padding-bottom:calc(env(safe-area-inset-bottom) + 12px);
+  z-index:5;
 }
 
-/* drawers */
-.modal-bg{position:fixed;inset:0;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:20;}
-.modal-bg.active{opacity:1;pointer-events:auto;}
-.panel{
-  width:100%;max-width:560px;max-height:calc(100vh - env(safe-area-inset-top) - 60px);
-  overflow-y:auto;border-radius:20px 20px 0 0;
-  background:radial-gradient(900px 700px at 50% 0%, rgba(255,216,109,.65), rgba(106,0,255,.75));
-  border-top:2px solid var(--gold);
-  box-shadow:0 -10px 50px rgba(124,58,237,.55),0 0 80px rgba(255,215,0,.25);
-  transform:translateY(100%);transition:transform .45s cubic-bezier(.25,.8,.25,1);
-  padding:18px; position:relative;
-}
-.modal-bg.active .panel{transform:translateY(0);}
-.panel::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.18), transparent 70%);filter:blur(40px);opacity:.55;animation:holo 3s ease-in-out infinite;pointer-events:none;}
-@keyframes holo{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.05)}}
+/* reset button */
+#resetBtn{position:fixed;right:12px;bottom:calc(70px + env(safe-area-inset-bottom));padding:8px 12px;border-radius:10px;background:linear-gradient(90deg,#ffd86d,#7c3aed);border:none;color:#fff;cursor:pointer;font-weight:700;z-index:10;}
 
-.list{display:grid;gap:10px;}
-.row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:rgba(20,12,36,.45);border:1px solid rgba(255,255,255,.25);}
-.icon{width:72px;height:72px;border-radius:12px;overflow:hidden;background:#0f0a1d;display:grid;place-items:center;box-shadow:0 0 14px rgba(255,255,255,.35),0 0 20px rgba(124,58,237,.28);}
-.icon img{width:100%;height:100%;object-fit:contain;}
-.meta{flex:1}.name{font-weight:800}.sub{font-size:12px;opacity:.85}
-
-#resetBtn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));padding:8px 12px;border-radius:10px;background:linear-gradient(90deg,#ffd86d,#7c3aed);border:none;color:#fff;cursor:pointer;font-weight:700;z-index:30;}
-footer{font-size:11px;opacity:.6;text-align:center;padding:4px;}
+footer{font-size:11px;opacity:.6;text-align:center;padding:4px;margin-top:auto;}
 </style>
 </head>
 <body>
 <header>
   <div class="pill">Souls: <span id="souls">0</span></div>
-  <div class="pill">Stage: <span id="stage">Ember</span></div>
+  <div class="pill">Stage: Ember</div>
   <button id="soundBtn" class="btn out">🔇 Sound Off</button>
 </header>
 
@@ -106,98 +85,49 @@ footer{font-size:11px;opacity:.6;text-align:center;padding:4px;}
 <div class="controls">
   <button id="openStore" class="btn">🛒 Shop</button>
   <button id="openVault" class="btn">🧬 Creatures</button>
-  <button id="force" class="btn out">⚡ Force Level-Up</button>
-</div>
-
-<!-- STORE -->
-<div id="storeModal" class="modal-bg">
-  <div class="panel">
-    <h2 style="text-align:center;margin:6px 0 10px;">🛒 Reactor Upgrades</h2>
-    <div class="list">
-      <div class="row"><div class="icon"><img src="assets/amplifier.png" alt="Amplifier"></div><div class="meta"><div class="name">Amplifier</div><div class="sub">+1 Souls per Tap</div></div><button class="btn" data-up="tap">Buy 100💠</button></div>
-      <div class="row"><div class="icon"><img src="assets/booster.png" alt="Booster"></div><div class="meta"><div class="name">Booster</div><div class="sub">+1 Souls / sec</div></div><button class="btn" data-up="auto">Buy 250💠</button></div>
-      <div class="row"><div class="icon"><img src="assets/surge.png" alt="Surge"></div><div class="meta"><div class="name">Surge</div><div class="sub">x2 Global for 10s</div></div><button class="btn" data-up="surge">Buy 300💠</button></div>
-    </div>
-    <button id="closeStore" class="btn out" style="width:100%;margin-top:10px;">Close</button>
-  </div>
-</div>
-
-<!-- CREATURES -->
-<div id="vaultModal" class="modal-bg">
-  <div class="panel">
-    <h2 style="text-align:center;margin:6px 0 10px;">🧬 Vault of Life</h2>
-    <div class="list">
-      <div class="row"><div class="icon"><img src="assets/creatureA.png" alt="A"></div><div class="meta"><div class="name">A-Class</div><div class="sub">Prototype creature</div></div></div>
-      <div class="row"><div class="icon"><img src="assets/creatureB.png" alt="B"></div><div class="meta"><div class="name">B-Class</div><div class="sub">Prototype creature</div></div></div>
-      <div class="row"><div class="icon"><img src="assets/creatureC.png" alt="C"></div><div class="meta"><div class="name">C-Class</div><div class="sub">Prototype creature</div></div></div>
-    </div>
-    <button id="closeVault" class="btn out" style="width:100%;margin-top:10px;">Close</button>
-  </div>
+  <button id="force" class="btn out">⚡ Force</button>
 </div>
 
 <button id="resetBtn">♻ Reset</button>
-<footer>v4.6 — Soul Reactor: Stable Layout + Sound</footer>
+<footer>v4.7 — Final Stable</footer>
 
 <script>
-/* ---------- Core counters ---------- */
+/* ---------- Soul logic ---------- */
 let souls=0, perTap=1, auto=0;
 const soulsEl=document.getElementById('souls');
 const xpFill=document.getElementById('xpFill');
 const xpText=document.getElementById('xpText');
-function update(){
-  soulsEl.textContent=souls;
-  xpFill.style.width=Math.min(souls,100)+'%';
-  xpText.textContent='XP '+souls+' / 100';
-}
+function update(){soulsEl.textContent=souls;xpFill.style.width=Math.min(souls,100)+'%';xpText.textContent='XP '+souls+' / 100';}
 
-/* ---------- Sound (robust mobile unlock) ---------- */
-let soundOn=false;
+/* ---------- Sound fix ---------- */
+let soundOn=false, unlocked=false;
 const soundBtn=document.getElementById('soundBtn');
-const tapSound=new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_03b3b0b6b4.mp3?filename=click-124467.mp3');
-tapSound.preload='auto'; tapSound.volume=0.45;
+const tapSound=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_03b3b0b6b4.mp3?filename=click-124467.mp3");
+tapSound.volume=0.45;
 
-/* unlock on first user gesture (click or touch) */
-function unlockAudio(){
-  tapSound.play().then(()=>{tapSound.pause(); tapSound.currentTime=0;}).catch(()=>{});
-  document.removeEventListener('click',unlockAudio);
-  document.removeEventListener('touchstart',unlockAudio);
-}
-document.addEventListener('click',unlockAudio,{once:true});
-document.addEventListener('touchstart',unlockAudio,{once:true});
-
-soundBtn.addEventListener('click',()=>{
-  soundOn=!soundOn;
-  soundBtn.textContent = soundOn ? '🔊 Sound On' : '🔇 Sound Off';
-  soundBtn.classList.toggle('out', !soundOn);
-});
-
-/* ---------- Interactions ---------- */
-const orb=document.getElementById('orb');
-orb.addEventListener('click', ()=>{
-  souls+=perTap;
-  update();
-  if(soundOn){
-    try{ tapSound.currentTime=0; tapSound.play(); }catch(e){}
+function unlockAudioContext(){
+  if(!unlocked){
+    tapSound.play().then(()=>{tapSound.pause();tapSound.currentTime=0;unlocked=true;});
   }
+}
+document.addEventListener("pointerdown",unlockAudioContext,{once:true});
+
+soundBtn.onclick=()=>{
+  soundOn=!soundOn;
+  soundBtn.textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  soundBtn.classList.toggle("out",!soundOn);
+};
+
+/* ---------- Orb ---------- */
+document.getElementById('orb').addEventListener('click',()=>{
+  souls+=perTap;update();
+  if(soundOn && unlocked){tapSound.currentTime=0;tapSound.play().catch(()=>{});}
 });
 
-setInterval(()=>{ if(auto>0){ souls+=auto; update(); } }, 1000);
+setInterval(()=>{if(auto>0){souls+=auto;update();}},1000);
 
-document.getElementById('force').addEventListener('click', ()=>{ souls+=50; update(); });
-
-/* ---------- Drawers ---------- */
-const storeModal=document.getElementById('storeModal');
-const vaultModal=document.getElementById('vaultModal');
-document.getElementById('openStore').addEventListener('click', ()=>{ vaultModal.classList.remove('active'); storeModal.classList.add('active'); });
-document.getElementById('openVault').addEventListener('click', ()=>{ storeModal.classList.remove('active'); vaultModal.classList.add('active'); });
-document.getElementById('closeStore').addEventListener('click', ()=>storeModal.classList.remove('active'));
-document.getElementById('closeVault').addEventListener('click', ()=>vaultModal.classList.remove('active'));
-
-/* ---------- Reset ---------- */
-document.getElementById('resetBtn').addEventListener('click', ()=>{
-  souls=0; perTap=1; auto=0; update();
-});
-
+document.getElementById('force').onclick=()=>{souls+=50;update();};
+document.getElementById('resetBtn').onclick=()=>{souls=0;perTap=1;auto=0;update();};
 update();
 </script>
 </body>

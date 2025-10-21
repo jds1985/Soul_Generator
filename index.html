@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Soul Reactor v3.6 — The Skunk Spirit Awakening</title>
+<title>Soul Reactor v3.7 — Animal Awakening</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 <style>
 html,body{margin:0;height:100%;font-family:Orbitron,system-ui;background:#0b0613;color:#f7f6ff;overflow:hidden;}
@@ -15,18 +15,31 @@ header{display:flex;justify-content:center;align-items:center;gap:12px;padding:1
 .xp{height:20px;border-radius:999px;overflow:hidden;position:relative;background:rgba(20,12,36,.55)}
 .xp-fill{height:100%;width:0;background:linear-gradient(90deg,#d4af37,#7c3aed);transition:width .4s ease}
 .xp-text{position:absolute;width:100%;text-align:center;font-size:12px;top:0;line-height:20px}
-.arena{display:grid;place-items:center;height:calc(100vh - 220px);position:relative}
+.arena{display:grid;place-items:center;height:calc(100vh - 260px);position:relative}
 .orb{width:min(45vh,60vw);height:min(45vh,60vw);max-width:380px;border-radius:50%;background:radial-gradient(circle at 50% 45%,#fff,#d4af37 30%,rgba(124,58,237,.9) 62%,#0b0613 86%);box-shadow:0 0 60px rgba(124,58,237,.6),0 0 140px rgba(212,175,55,.45);cursor:pointer;transition:transform .1s}
 .orb:active{transform:scale(.98)}
 .controls{display:flex;justify-content:center;gap:10px;margin-bottom:6px}
-.orb-row{display:flex;justify-content:center;gap:8px;margin-bottom:4px}
-.marble{width:24px;height:24px;border-radius:50%;background:#444;opacity:.4;box-shadow:0 0 4px #000 inset,0 0 6px rgba(255,255,255,.2);transition:all .4s}
-.marble.active{opacity:1;background:radial-gradient(circle at 40% 40%, var(--mcol1), var(--mcol2));box-shadow:0 0 10px var(--mcol2)}
+.orb-row{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.marble{width:26px;height:26px;border-radius:50%;background:#333;opacity:.4;box-shadow:0 0 4px #000 inset,0 0 6px rgba(255,255,255,.2);transition:all .4s;cursor:pointer}
+.marble.active{opacity:1;background:radial-gradient(circle at 40% 40%,var(--mcol1),var(--mcol2));box-shadow:0 0 10px var(--mcol2)}
 #spiritOrb{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);width:48px;height:48px;border-radius:50%;background:radial-gradient(circle,#fff,#7c3aed);box-shadow:0 0 18px #7c3aed;display:none;cursor:pointer;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.1)}}
-#creatureModal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:20}
-#creatureModal img{max-width:80%;border-radius:20px;box-shadow:0 0 40px rgba(255,255,255,.3)}
-#creatureModal button{margin-top:20px}
+
+/* Animal Modal */
+#animalModal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:20}
+#animalModal img{max-width:80%;border-radius:20px;box-shadow:0 0 40px rgba(255,255,255,.3)}
+#animalModal button{margin-top:20px}
+
+/* Store Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-bg.active{opacity:1;pointer-events:all}
+.shop-modal{width:100%;max-width:480px;background:rgba(18,10,33,.96);border-radius:20px 20px 0 0;border-top:2px solid #d4af37;box-shadow:0 -6px 40px rgba(124,58,237,.35);transform:translateY(100%);transition:transform .35s ease;padding:18px}
+.modal-bg.active .shop-modal{transform:translateY(0)}
+.shop-modal h2{text-align:center;color:#d4af37}
+.item{display:flex;justify-content:space-between;align-items:center;margin:10px 0;padding:12px;border-radius:12px;background:rgba(124,58,237,.14);border:1px solid rgba(212,175,55,.25)}
+.buy{background:linear-gradient(90deg,#d4af37,#7c3aed);border:none;color:#fff;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+.close-btn{margin-top:10px;background:transparent;border:1px solid #d4af37;color:#d4af37;border-radius:10px;padding:8px 14px;cursor:pointer;width:100%}
+.badge{text-align:center;color:#f5d46b;font-size:14px;height:20px;margin-top:6px}
 </style>
 </head>
 <body>
@@ -40,33 +53,48 @@ header{display:flex;justify-content:center;align-items:center;gap:12px;padding:1
  <div class="xp"><div class="xp-fill" id="xpFill"></div><div class="xp-text" id="xpText">XP 0 / 100</div></div>
 </div>
 
-<main class="arena">
- <div class="orb" id="orb"></div>
-</main>
-
+<main class="arena"><div class="orb" id="orb"></div></main>
 <div class="orb-row" id="orbRow"></div>
 
 <div class="controls">
- <button class="btn" id="openShop">🛍️ Shop</button>
+ <button class="btn" id="openShop">🛍️ Store</button>
  <button class="btn outline" id="resetBtn">Reset</button>
 </div>
 
 <div id="spiritOrb"></div>
 
-<div id="creatureModal">
- <img src="assets/skunk_spirit.png" alt="Skunk Spirit">
- <p style="margin-top:10px;color:#fff;font-weight:700">Skunk Spirit Unlocked — The Guardian of Scent and Soul Balance</p>
- <button class="btn outline" id="closeCreature">Close</button>
+<!-- Animal Modal -->
+<div id="animalModal">
+ <img id="animalImage" src="assets/skunk_spirit.png" alt="Animal Spirit">
+ <p style="margin-top:10px;color:#fff;font-weight:700" id="animalDesc">Skunk Spirit — Guardian of Balance</p>
+ <button class="btn outline" id="closeAnimal">Close</button>
+</div>
+
+<!-- Store Modal -->
+<div class="modal-bg" id="shopModal">
+ <div class="shop-modal">
+  <h2>Reactor Upgrades</h2>
+  <div class="item"><div><strong>Amplifier</strong><div class="sub">+1 Souls per Tap</div></div><button class="buy" data-up="tap" data-cost="100">Buy 100💠</button></div>
+  <div class="item"><div><strong>Booster</strong><div class="sub">+1 Souls / sec</div></div><button class="buy" data-up="auto" data-cost="250">Buy 250💠</button></div>
+  <div class="item"><div><strong>Surge</strong><div class="sub">x2 Global for 10s</div></div><button class="buy" data-up="mult" data-cost="300">Buy 300💠</button></div>
+  <div class="badge" id="msg"></div>
+  <button class="close-btn" id="closeShop">Close</button>
+ </div>
 </div>
 
 <script>
-const orb=document.getElementById('orb'),soulsEl=document.getElementById('souls'),xpFill=document.getElementById('xpFill'),xpText=document.getElementById('xpText');
-const soundBtn=document.getElementById('soundBtn'),spiritOrb=document.getElementById('spiritOrb'),creatureModal=document.getElementById('creatureModal');
-const closeCreature=document.getElementById('closeCreature');
-const orbRow=document.getElementById('orbRow');
-let audioCtx,gainNode;let soundOn=false;
+const orb=document.getElementById('orb'),soulsEl=document.getElementById('souls'),xpFill=document.getElementById('xpFill'),
+xpText=document.getElementById('xpText'),soundBtn=document.getElementById('soundBtn'),
+shopModal=document.getElementById('shopModal'),openShop=document.getElementById('openShop'),
+closeShop=document.getElementById('closeShop'),msg=document.getElementById('msg'),
+animalModal=document.getElementById('animalModal'),animalImage=document.getElementById('animalImage'),
+animalDesc=document.getElementById('animalDesc'),closeAnimal=document.getElementById('closeAnimal'),
+orbRow=document.getElementById('orbRow');
+
+let audioCtx,gainNode,soundOn=false;
 let souls=0,xp=0,level=0,requiredXP=100;
 
+// build marbles
 function buildMarbles(){
  orbRow.innerHTML="";
  const pastel=[
@@ -75,7 +103,12 @@ function buildMarbles(){
   ["#e7e0ff","#c0b0ff"],["#e0ffe6","#a4ffc1"],["#fffde0","#fff6a4"],
   ["#e0f9ff","#a4f1ff"],["#ffe0f3","#ffb0d8"],["#e9e0ff","#c2b0ff"]];
  pastel.forEach((c,i)=>{
-  const m=document.createElement('div');m.className='marble';m.style.setProperty('--mcol1',c[0]);m.style.setProperty('--mcol2',c[1]);
+  const m=document.createElement('div');
+  m.className='marble';
+  m.dataset.index=i;
+  m.style.setProperty('--mcol1',c[0]);
+  m.style.setProperty('--mcol2',c[1]);
+  m.onclick=()=>{if(i<level)showAnimal(i)};
   orbRow.appendChild(m);
  });
 }
@@ -84,9 +117,9 @@ const marbles=document.querySelectorAll('.marble');
 
 function updateUI(){
  soulsEl.textContent=Math.floor(souls);
- const prog=(xp/requiredXP)*100;xpFill.style.width=prog+'%';xpText.textContent=`XP ${Math.floor(xp)} / ${requiredXP}`;
+ xpFill.style.width=(xp/requiredXP*100)+'%';
+ xpText.textContent=`XP ${Math.floor(xp)} / ${requiredXP}`;
  marbles.forEach((m,i)=>m.classList.toggle('active',i<level));
- if(level>=12){spiritOrb.style.display='block';}
 }
 
 function playChime(){
@@ -99,31 +132,42 @@ function playChime(){
 }
 
 function sparkle(){
- const div=document.createElement('div');div.style.position='fixed';div.style.width='6px';div.style.height='6px';
- div.style.background='radial-gradient(circle,#fff,#a4d8ff)';div.style.borderRadius='50%';
- div.style.left=Math.random()*100+'vw';div.style.top=Math.random()*100+'vh';div.style.opacity='1';
- div.style.transition='all 1.2s ease-out';document.body.appendChild(div);
- setTimeout(()=>{div.style.transform='translateY(-50px) scale(0)';div.style.opacity='0';},10);
- setTimeout(()=>div.remove(),1200);
+ const d=document.createElement('div');
+ d.style.position='fixed';d.style.width='6px';d.style.height='6px';
+ d.style.background='radial-gradient(circle,#fff,#a4d8ff)';
+ d.style.borderRadius='50%';d.style.left=Math.random()*100+'vw';
+ d.style.top=Math.random()*100+'vh';d.style.opacity='1';
+ d.style.transition='all 1.2s ease-out';
+ document.body.appendChild(d);
+ setTimeout(()=>{d.style.transform='translateY(-50px) scale(0)';d.style.opacity='0';},10);
+ setTimeout(()=>d.remove(),1200);
 }
 
-orb.addEventListener('click',()=>{
- if(soundOn)playChime();
- sparkle();
- souls+=1;xp+=10;
- if(xp>=requiredXP){xp=0;level++;requiredXP=Math.floor(requiredXP*1.25);playChime();}
- updateUI();
-});
+function showAnimal(i){
+ animalModal.style.display='flex';
+ // later you can change image per animal index
+ if(i===0){animalImage.src="assets/skunk_spirit.png";animalDesc.textContent="Skunk Spirit — Guardian of Balance";}
+ playChime();
+}
 
-soundBtn.onclick=()=>{
- soundOn=!soundOn;
- soundBtn.textContent=soundOn?'🔊 Sound On':'🔇 Sound Off';
- if(soundOn){playChime();}
+orb.onclick=()=>{
+ sparkle();if(soundOn)playChime();
+ souls+=1;xp+=10;
+ if(xp>=requiredXP){xp=0;level++;requiredXP=Math.floor(requiredXP*1.25);if(level>12)level=12;playChime();}
+ updateUI();
 };
 
-spiritOrb.onclick=()=>{creatureModal.style.display='flex';if(soundOn)playChime();};
-closeCreature.onclick=()=>creatureModal.style.display='none';
-document.getElementById('resetBtn').onclick=()=>{souls=0;xp=0;level=0;requiredXP=100;spiritOrb.style.display='none';updateUI();};
+soundBtn.onclick=()=>{soundOn=!soundOn;soundBtn.textContent=soundOn?'🔊 Sound On':'🔇 Sound Off';if(soundOn)playChime();};
+closeAnimal.onclick=()=>animalModal.style.display='none';
+
+// Store controls
+openShop.onclick=()=>shopModal.classList.add('active');
+closeShop.onclick=()=>shopModal.classList.remove('active');
+shopModal.addEventListener('click',e=>{if(e.target===shopModal)shopModal.classList.remove('active');});
+document.querySelectorAll('.buy').forEach(b=>b.onclick=()=>{msg.textContent='Feature Coming Soon';setTimeout(()=>msg.textContent='',1500);});
+
+// reset
+document.getElementById('resetBtn').onclick=()=>{souls=0;xp=0;level=0;requiredXP=100;updateUI();};
 updateUI();
 </script>
 </body>
